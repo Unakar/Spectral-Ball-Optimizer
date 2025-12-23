@@ -338,8 +338,8 @@ def plot_f_lambda_multi_repeat(
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#9C27B0",  # 淡紫色，与绿色系更协调
-            markeredgecolor="#7B1FA2",
+            color="#006eff",
+            markeredgecolor="#2980b9",
             markeredgewidth=1,
             alpha=0.9,
             label="Averaged λ*",
@@ -348,16 +348,16 @@ def plot_f_lambda_multi_repeat(
         plt.axhline(
             y=f_at_lambda_mean,
             linestyle="--",
-            color="#9C27B0",
+            color="#006eff",
             alpha=0.5,
-            linewidth=0.8,
+            linewidth=1.2,
         )
         plt.axvline(
             x=lambda_mean,
             linestyle="--",
-            color="#9C27B0",
+            color="#006eff",
             alpha=0.5,
-            linewidth=0.8,
+            linewidth=1.2,
         )
 
     plt.xlabel("λ")
@@ -408,26 +408,26 @@ def plot_f_lambda_multi_repeat(
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#9C27B0",
-            markeredgecolor="#7B1FA2",
+            color="#006eff",
+            markeredgecolor="#2980b9",
             markeredgewidth=1,
             alpha=0.9,
         )
 
     # 在放大区域绘制基准线
     ax_inset.axhline(
-        y=f_at_lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+        y=f_at_lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
     )
     ax_inset.axvline(
-        x=lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+        x=lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
     )
     ax_inset.text(
-        0.55,
+        0.53,
         0.45,
         f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
         transform=ax_inset.transAxes,
         fontsize=10,
-        color="#9C27B0",
+        color="#006eff",
         alpha=0.8,
     )
 
