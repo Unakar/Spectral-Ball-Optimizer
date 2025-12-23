@@ -6,12 +6,29 @@ This tool tests the f function from spectral_ball_utils.py to verify:
 2. Find the zero point of f (suspected to be near 0)
 """
 
+import os
 from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from scipy.optimize import brentq
+
+# Use a clean style suitable for papers
+plt.style.use("seaborn-v0_8-whitegrid")
+plt.rcParams.update(
+    {
+        "font.size": 11,
+        "axes.labelsize": 12,
+        "axes.titlesize": 13,
+        "legend.fontsize": 10,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10,
+        "figure.dpi": 150,
+        "savefig.dpi": 300,
+        "savefig.bbox": "tight",
+    }
+)
 
 # ============================================================================
 # Core functions copied from spectral_ball_utils.py
@@ -270,7 +287,7 @@ def plot_f_lambda_single(
     plt.legend(fontsize=10)
 
     if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        plt.savefig(save_path, dpi=600, bbox_inches="tight")
         print(f"Plot saved to {save_path}")
 
     plt.tight_layout()
@@ -345,13 +362,24 @@ def plot_f_lambda_multi_repeat(
             zero_point = np.nan
         zero_points[rep] = zero_point
 
+        # 为不同 repeat 分配不同深浅的绿色系
+        colors = [
+            "#4CAF50",  # 亮绿色
+            "#8BC34A",  # 淡绿色
+            "#CDDC39",  # 黄绿色
+            "#81C784",  # 薄荷绿
+            "#A5D6A7",  # 浅薄荷绿
+        ]
+        color = colors[rep % len(colors)]
+
         # 画出这一条 f(λ) 曲线（所有 repeat 画在同一张图上）
         plt.plot(
             lambdas,
             f_values,
-            linewidth=1.5,
+            linewidth=2.5,
             alpha=0.7,
-            label=f"repeat {rep+1}" if rep == 0 else None,  # 避免太多 legend 项
+            color=color,
+            label=f"{n_repeats} repeats" if rep == 0 else None,  # 避免太多 legend 项
         )
 
     # 对 repeat 维度求 f(λ) 的均值和标准差
@@ -363,30 +391,45 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, "k-", linewidth=2.5, label="mean f(λ) over repeats")
+    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="mean f(λ) over repeats")
     plt.fill_between(
         lambdas,
         f_mean - f_std,
         f_mean + f_std,
         color="gray",
         alpha=0.2,
-        label="±1 std of f(λ)",
     )
-
-    # 画基准线
-    plt.axhline(y=0, color="k", linestyle="--", alpha=0.3, label="f(λ) = 0")
-    plt.axvline(x=0, color="gray", linestyle="--", alpha=0.3, label="λ = 0")
 
     # 在图里标出 λ* 的均值位置
     if not np.isnan(lambda_mean):
         # 计算在 λ_mean 处的 f_mean 进行标记（插值）
         f_at_lambda_mean = np.interp(lambda_mean, lambdas, f_mean)
+
+        # 改进标记方式：使用更美观的颜色和样式
         plt.plot(
             lambda_mean,
             f_at_lambda_mean,
-            "ro",
-            markersize=8,
-            label=f"λ* mean = {lambda_mean:.3e} ± {lambda_std:.1e}",
+            "o",
+            markersize=3,
+            color="#9C27B0",  # 淡紫色，与绿色系更协调
+            markeredgecolor="#7B1FA2",
+            markeredgewidth=1,
+            alpha=0.9,
+        )
+
+        plt.axhline(
+            y=f_at_lambda_mean,
+            linestyle="--",
+            color="#9C27B0",
+            alpha=0.5,
+            linewidth=0.8,
+        )
+        plt.axvline(
+            x=lambda_mean,
+            linestyle="--",
+            color="#9C27B0",
+            alpha=0.5,
+            linewidth=0.8,
         )
 
     plt.xlabel("λ", fontsize=12)
@@ -394,6 +437,78 @@ def plot_f_lambda_multi_repeat(
     plt.title(title, fontsize=14)
     plt.grid(True, alpha=0.3)
     plt.legend(fontsize=9)
+    plt.tight_layout()
+
+    # --------------------------
+    # 添加放大的局部区域（右下角）
+    # --------------------------
+    # 创建子图：[left, bottom, width, height]
+    ax_inset = plt.axes([0.6, 0.2, 0.35, 0.35])
+
+    # 放大区域的范围
+    zoom_x_min, zoom_x_max = -0.05, 0.05
+
+    # 在放大区域重新绘制所有曲线
+    for rep in range(n_repeats):
+        f_values = f_values_all[rep]
+        # 只绘制x在放大范围内的部分
+        mask = (lambdas >= zoom_x_min) & (lambdas <= zoom_x_max)
+        ax_inset.plot(
+            lambdas[mask],
+            f_values[mask],
+            linewidth=2.5,
+            alpha=0.7,
+            color=colors[rep % len(colors)],
+        )
+
+    # 在放大区域绘制均值曲线和标准差
+    mask = (lambdas >= zoom_x_min) & (lambdas <= zoom_x_max)
+    ax_inset.plot(lambdas[mask], f_mean[mask], "k-", linewidth=1)
+    # ax_inset.fill_between(
+    #     lambdas[mask],
+    #     (f_mean - f_std)[mask],
+    #     (f_mean + f_std)[mask],
+    #     color="gray",
+    #     alpha=0.2,
+    # )
+
+    # 如果lambda_mean在放大范围内，也在放大区域标记出来
+    if not np.isnan(lambda_mean) and zoom_x_min <= lambda_mean <= zoom_x_max:
+        f_at_lambda_mean = np.interp(lambda_mean, lambdas, f_mean)
+        ax_inset.plot(
+            lambda_mean,
+            f_at_lambda_mean,
+            "o",
+            markersize=3,
+            color="#9C27B0",
+            markeredgecolor="#7B1FA2",
+            markeredgewidth=1,
+            alpha=0.9,
+        )
+
+    # 在放大区域绘制基准线
+    ax_inset.axhline(
+        y=f_at_lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+    )
+    ax_inset.axvline(
+        x=lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+    )
+    ax_inset.text(
+        0.55,
+        0.45,
+        f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
+        transform=ax_inset.transAxes,
+        fontsize=7,
+        color="#9C27B0",
+        alpha=0.8,
+    )
+
+    # 设置放大区域的标题和轴标签
+    ax_inset.set_title(f"Zoom: [{zoom_x_min}, {zoom_x_max}]", fontsize=9)
+    ax_inset.grid(True, alpha=0.3)
+    ax_inset.tick_params(axis="both", labelsize=7)
+
+    # 调整布局
     plt.tight_layout()
 
     if save_path:
@@ -417,7 +532,9 @@ def test_f_function(
     show_plots: bool = True,
     save_plots: bool = False,
     n_repeats: int = 5,  # 新增：每个 size & init config 的重复次数
+    save_dir: str = "results",  # 新增：保存目录
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+    seed: int = 42,
 ):
     """
     Test f(lambda) function for various matrix sizes and initialization configs.
@@ -435,22 +552,23 @@ def test_f_function(
         show_plots: Whether to display plots
         save_plots: Whether to save plots to files
         n_repeats: Number of repeats per (size, init) config
+        save_dir: Directory to save plots (default "results")
         device: Device to generate matrices and perform computations on (CPU or CUDA)
+        seed: Random seed for reproducibility (default 42)
     """
     if matrix_sizes is None:
         matrix_sizes = [
+            (8, 1024),
             (1024, 2048),
+            (1024, 3072),
             (4096, 1024),
             (6144, 1024),
-            (1024, 3072),
             (8192, 1024),
-            (8, 1024),
         ]
 
     if init_configs is None:
         init_configs = [
             (0.0, 0.02),  # mean=0.0, std=0.02
-            (0.02, 0.02),  # mean=0.02, std=0.06
         ]
 
     print("=" * 80)
@@ -468,10 +586,14 @@ def test_f_function(
             # =========================
             # repeat n 次并画在同一张图上
             # =========================
-            title = f"f(λ) for {m}×{n} matrix (mean={mean}, std={std}), n={n_repeats}"
+            title = f"f(λ) for randomly generated {m}×{n} matrix (mean={mean}, std={std}), repeat {n_repeats} times"
             save_path = None
             if save_plots:
-                save_path = f"f_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.png"
+                # Create results directory if it doesn't exist
+
+                save_path = os.path.join(
+                    save_dir, f"f_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.pdf"
+                )
 
             lambdas, f_values_all, f_mean, f_std, zero_points = (
                 plot_f_lambda_multi_repeat(
@@ -483,7 +605,7 @@ def test_f_function(
                     num_points=200,
                     msign_steps=msign_steps,
                     n_repeats=n_repeats,
-                    base_seed=42,
+                    base_seed=seed,
                     title=title,
                     save_path=save_path,
                     device=device,
@@ -576,11 +698,16 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
+    save_dir = "results"
+    os.makedirs(save_dir, exist_ok=True)
+
     test_f_function(
         msign_steps=8,  # Use 8-step Polar Express
         lambda_range=(-1.0, 1.0),
         show_plots=True,
         save_plots=True,
         n_repeats=5,  # 默认做 5 次 repeat
+        save_dir=save_dir,
         device=device,
+        seed=42
     )
