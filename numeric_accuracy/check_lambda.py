@@ -15,15 +15,15 @@ import torch
 from scipy.optimize import brentq
 
 # Use a clean style suitable for papers
-plt.style.use("seaborn-v0_8-whitegrid")
+# plt.style.use("seaborn-v0_8-whitegrid")
 plt.rcParams.update(
     {
-        "font.size": 11,
-        "axes.labelsize": 12,
-        "axes.titlesize": 13,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "font.size": 20,
+        "axes.labelsize": 20,
+        "axes.titlesize": 20,
+        "legend.fontsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
         "figure.dpi": 150,
         "savefig.dpi": 300,
         "savefig.bbox": "tight",
@@ -229,7 +229,7 @@ def plot_f_lambda_single(
     G: torch.Tensor,
     Theta: torch.Tensor,
     lambda_range: Tuple[float, float] = (-0.1, 0.1),
-    num_points: int = 200,
+    num_points: int = 2000,
     msign_steps: int = 8,
     title: str = "f(λ) = <Θ, msign(G + λ·Θ)>",
     save_path: str = None,
@@ -266,8 +266,8 @@ def plot_f_lambda_single(
 
     # Create plot
     plt.figure(figsize=(10, 6))
-    plt.plot(lambdas, f_values, "b-", linewidth=2, label="f(λ)")
-    plt.axhline(y=0, color="k", linestyle="--", alpha=0.3, label="f(λ) = 0")
+    plt.plot(lambdas, f_values, "b-", linewidth=2, label="h(λ)")
+    plt.axhline(y=0, color="k", linestyle="--", alpha=0.3, label="h(λ) = 0")
     plt.axvline(x=0, color="gray", linestyle="--", alpha=0.3, label="λ = 0")
 
     if success:
@@ -280,11 +280,11 @@ def plot_f_lambda_single(
             label=f"Zero point: λ={zero_point:.6e}, f={f_zero:.6e}",
         )
 
-    plt.xlabel("λ", fontsize=12)
-    plt.ylabel("f(λ)", fontsize=12)
-    plt.title(title, fontsize=14)
+    plt.xlabel("λ", fontsize=15)
+    plt.ylabel("h(λ)", fontsize=15)
+    plt.title(title, fontsize=15)
     plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=10)
+    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", alpha=0.9)
 
     if save_path:
         plt.savefig(save_path, dpi=600, bbox_inches="tight")
@@ -304,7 +304,7 @@ def plot_f_lambda_multi_repeat(
     mean: float,
     std: float,
     lambda_range: Tuple[float, float] = (-0.1, 0.1),
-    num_points: int = 200,
+    num_points: int = 2000,
     msign_steps: int = 8,
     n_repeats: int = 5,
     base_seed: int = 42,
@@ -391,7 +391,7 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="mean f(λ) over repeats")
+    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged h(λ) over repeats")
     plt.fill_between(
         lambdas,
         f_mean - f_std,
@@ -410,11 +410,12 @@ def plot_f_lambda_multi_repeat(
             lambda_mean,
             f_at_lambda_mean,
             "o",
-            markersize=3,
+            markersize=5,
             color="#9C27B0",  # 淡紫色，与绿色系更协调
             markeredgecolor="#7B1FA2",
             markeredgewidth=1,
             alpha=0.9,
+            label="Averaged λ*",
         )
 
         plt.axhline(
@@ -432,11 +433,11 @@ def plot_f_lambda_multi_repeat(
             linewidth=0.8,
         )
 
-    plt.xlabel("λ", fontsize=12)
-    plt.ylabel("f(λ)", fontsize=12)
-    plt.title(title, fontsize=14)
+    plt.xlabel("λ")
+    plt.ylabel("h(λ)")
+    plt.title(title)
     plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=9)
+    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", framealpha=0.9)
     plt.tight_layout()
 
     # --------------------------
@@ -446,7 +447,7 @@ def plot_f_lambda_multi_repeat(
     ax_inset = plt.axes([0.6, 0.2, 0.35, 0.35])
 
     # 放大区域的范围
-    zoom_x_min, zoom_x_max = -0.05, 0.05
+    zoom_x_min, zoom_x_max = -0.01, 0.01
 
     # 在放大区域重新绘制所有曲线
     for rep in range(n_repeats):
@@ -456,7 +457,7 @@ def plot_f_lambda_multi_repeat(
         ax_inset.plot(
             lambdas[mask],
             f_values[mask],
-            linewidth=2.5,
+            linewidth=1.5,
             alpha=0.7,
             color=colors[rep % len(colors)],
         )
@@ -479,7 +480,7 @@ def plot_f_lambda_multi_repeat(
             lambda_mean,
             f_at_lambda_mean,
             "o",
-            markersize=3,
+            markersize=5,
             color="#9C27B0",
             markeredgecolor="#7B1FA2",
             markeredgewidth=1,
@@ -498,15 +499,18 @@ def plot_f_lambda_multi_repeat(
         0.45,
         f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
         transform=ax_inset.transAxes,
-        fontsize=7,
+        fontsize=10,
         color="#9C27B0",
         alpha=0.8,
     )
 
     # 设置放大区域的标题和轴标签
-    ax_inset.set_title(f"Zoom: [{zoom_x_min}, {zoom_x_max}]", fontsize=9)
+    ax_inset.set_title(f"Zoom: [{zoom_x_min}, {zoom_x_max}]", fontsize=12)
     ax_inset.grid(True, alpha=0.3)
-    ax_inset.tick_params(axis="both", labelsize=7)
+    # 手动设置横轴刻度，显示0和正负各两个刻度
+    ax_inset.set_xticks([-0.01, -0.005, 0, 0.005, 0.01])
+    ax_inset.tick_params(axis="x", labelsize=10)
+    ax_inset.tick_params(axis="y", labelsize=10)
 
     # 调整布局
     plt.tight_layout()
@@ -586,13 +590,13 @@ def test_f_function(
             # =========================
             # repeat n 次并画在同一张图上
             # =========================
-            title = f"f(λ) for randomly generated {m}×{n} matrix (mean={mean}, std={std}), repeat {n_repeats} times"
+            title = f"h(λ) for random ({m},{n}) matrix (μ={mean}, σ={std}) ×{n_repeats}"
             save_path = None
             if save_plots:
                 # Create results directory if it doesn't exist
 
                 save_path = os.path.join(
-                    save_dir, f"f_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.pdf"
+                    save_dir, f"h_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.pdf"
                 )
 
             lambdas, f_values_all, f_mean, f_std, zero_points = (
@@ -602,7 +606,7 @@ def test_f_function(
                     mean,
                     std,
                     lambda_range=lambda_range,
-                    num_points=200,
+                    num_points=2000,
                     msign_steps=msign_steps,
                     n_repeats=n_repeats,
                     base_seed=seed,
@@ -709,5 +713,5 @@ if __name__ == "__main__":
         n_repeats=5,  # 默认做 5 次 repeat
         save_dir=save_dir,
         device=device,
-        seed=42
+        seed=42,
     )
