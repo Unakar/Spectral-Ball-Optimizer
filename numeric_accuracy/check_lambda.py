@@ -18,10 +18,11 @@ from scipy.optimize import brentq
 # plt.style.use("seaborn-v0_8-whitegrid")
 plt.rcParams.update(
     {
-        "font.size": 20,
-        "axes.labelsize": 20,
-        "axes.titlesize": 20,
-        "legend.fontsize": 20,
+        "mathtext.fontset": "cm",
+        "font.size": 16,
+        "axes.labelsize": 18,
+        "axes.titlesize": 24,
+        "legend.fontsize": 18,
         "xtick.labelsize": 16,
         "ytick.labelsize": 16,
         "figure.dpi": 150,
@@ -318,7 +319,7 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged h(λ) over repeats")
+    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$ over repeats")
     plt.fill_between(
         lambdas,
         f_mean - f_std,
@@ -342,7 +343,7 @@ def plot_f_lambda_multi_repeat(
             markeredgecolor="#2980b9",
             markeredgewidth=1,
             alpha=0.9,
-            label="Averaged λ*",
+            label="Averaged $\\lambda^\\ast$",
         )
 
         plt.axhline(
@@ -360,8 +361,8 @@ def plot_f_lambda_multi_repeat(
             linewidth=1.2,
         )
 
-    plt.xlabel("λ")
-    plt.ylabel("h(λ)")
+    plt.xlabel("$\\lambda$")
+    plt.ylabel("$h(\\lambda)$")
     plt.title(title)
     plt.grid(True, alpha=0.3)
     plt.legend(fontsize=15, facecolor="white", edgecolor="gray", framealpha=0.9)
@@ -517,7 +518,7 @@ def test_f_function(
             # =========================
             # repeat n 次并画在同一张图上
             # =========================
-            title = f"h(λ) for random ({m},{n}) matrix (μ={mean}, σ={std}) ×{n_repeats}"
+            title = f"$h(\\lambda)$ for random ({m},{n}) matrix ($\\mu$={mean}, $\\sigma$={std}) ×{n_repeats}"
             save_path = None
             if save_plots:
                 # Create results directory if it doesn't exist
