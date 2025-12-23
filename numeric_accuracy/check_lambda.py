@@ -18,10 +18,11 @@ from scipy.optimize import brentq
 # plt.style.use("seaborn-v0_8-whitegrid")
 plt.rcParams.update(
     {
-        "font.size": 20,
-        "axes.labelsize": 20,
-        "axes.titlesize": 20,
-        "legend.fontsize": 20,
+        "mathtext.fontset": "cm",
+        "font.size": 16,
+        "axes.labelsize": 18,
+        "axes.titlesize": 24,
+        "legend.fontsize": 18,
         "xtick.labelsize": 16,
         "ytick.labelsize": 16,
         "figure.dpi": 150,
@@ -225,79 +226,6 @@ def find_zero_point(
         return 0.0, False
 
 
-def plot_f_lambda_single(
-    G: torch.Tensor,
-    Theta: torch.Tensor,
-    lambda_range: Tuple[float, float] = (-0.1, 0.1),
-    num_points: int = 2000,
-    msign_steps: int = 8,
-    title: str = "f(λ) = <Θ, msign(G + λ·Θ)>",
-    save_path: str = None,
-    show_plot: bool = False,
-) -> Tuple[np.ndarray, np.ndarray, float]:
-    """
-    Plot f(lambda) and mark the zero point for a single (G, Theta) pair.
-
-    NOTE: This is kept mainly for reference / backward-compatibility.
-    The main test loop below now uses a multi-repeat version that overlays
-    multiple curves in one figure and computes statistics.
-
-    Args:
-        G: Gradient tensor
-        Theta: Direction tensor
-        lambda_range: Range of lambda values to plot
-        num_points: Number of points to sample
-        msign_steps: Number of msign steps
-        title: Plot title
-        save_path: Path to save the plot (optional)
-        show_plot: Whether to immediately show this single plot
-
-    Returns:
-        lambdas: Array of lambda values
-        f_values: Array of f(lambda) values
-        zero_point: The lambda value where f(lambda) = 0
-    """
-    lambda_min, lambda_max = lambda_range
-    lambdas = np.linspace(lambda_min, lambda_max, num_points)
-    f_values = np.array([compute_f(G, Theta, lam, msign_steps) for lam in lambdas])
-
-    # Find zero point
-    zero_point, success = find_zero_point(G, Theta, lambda_min, lambda_max, msign_steps)
-
-    # Create plot
-    plt.figure(figsize=(10, 6))
-    plt.plot(lambdas, f_values, "b-", linewidth=2, label="h(λ)")
-    plt.axhline(y=0, color="k", linestyle="--", alpha=0.3, label="h(λ) = 0")
-    plt.axvline(x=0, color="gray", linestyle="--", alpha=0.3, label="λ = 0")
-
-    if success:
-        f_zero = compute_f(G, Theta, zero_point, msign_steps)
-        plt.plot(
-            zero_point,
-            f_zero,
-            "ro",
-            markersize=10,
-            label=f"Zero point: λ={zero_point:.6e}, f={f_zero:.6e}",
-        )
-
-    plt.xlabel("λ", fontsize=15)
-    plt.ylabel("h(λ)", fontsize=15)
-    plt.title(title, fontsize=15)
-    plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", alpha=0.9)
-
-    if save_path:
-        plt.savefig(save_path, dpi=600, bbox_inches="tight")
-        print(f"Plot saved to {save_path}")
-
-    plt.tight_layout()
-
-    if show_plot:
-        plt.show()
-
-    return lambdas, f_values, zero_point
-
-
 def plot_f_lambda_multi_repeat(
     m: int,
     n: int,
@@ -391,7 +319,7 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged h(λ) over repeats")
+    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$ over repeats")
     plt.fill_between(
         lambdas,
         f_mean - f_std,
@@ -411,30 +339,30 @@ def plot_f_lambda_multi_repeat(
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#9C27B0",  # 淡紫色，与绿色系更协调
-            markeredgecolor="#7B1FA2",
+            color="#006eff",
+            markeredgecolor="#2980b9",
             markeredgewidth=1,
             alpha=0.9,
-            label="Averaged λ*",
+            label="Averaged $\\lambda^\\ast$",
         )
 
         plt.axhline(
             y=f_at_lambda_mean,
             linestyle="--",
-            color="#9C27B0",
+            color="#006eff",
             alpha=0.5,
-            linewidth=0.8,
+            linewidth=1.2,
         )
         plt.axvline(
             x=lambda_mean,
             linestyle="--",
-            color="#9C27B0",
+            color="#006eff",
             alpha=0.5,
-            linewidth=0.8,
+            linewidth=1.2,
         )
 
-    plt.xlabel("λ")
-    plt.ylabel("h(λ)")
+    plt.xlabel("$\\lambda$")
+    plt.ylabel("$h(\\lambda)$")
     plt.title(title)
     plt.grid(True, alpha=0.3)
     plt.legend(fontsize=15, facecolor="white", edgecolor="gray", framealpha=0.9)
@@ -481,26 +409,26 @@ def plot_f_lambda_multi_repeat(
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#9C27B0",
-            markeredgecolor="#7B1FA2",
+            color="#006eff",
+            markeredgecolor="#2980b9",
             markeredgewidth=1,
             alpha=0.9,
         )
 
     # 在放大区域绘制基准线
     ax_inset.axhline(
-        y=f_at_lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+        y=f_at_lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
     )
     ax_inset.axvline(
-        x=lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+        x=lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
     )
     ax_inset.text(
-        0.55,
+        0.53,
         0.45,
         f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
         transform=ax_inset.transAxes,
         fontsize=10,
-        color="#9C27B0",
+        color="#006eff",
         alpha=0.8,
     )
 
@@ -590,7 +518,7 @@ def test_f_function(
             # =========================
             # repeat n 次并画在同一张图上
             # =========================
-            title = f"h(λ) for random ({m},{n}) matrix (μ={mean}, σ={std}) ×{n_repeats}"
+            title = f"$h(\\lambda)$ for random ({m},{n}) matrix ($\\mu$={mean}, $\\sigma$={std}) ×{n_repeats}"
             save_path = None
             if save_plots:
                 # Create results directory if it doesn't exist
