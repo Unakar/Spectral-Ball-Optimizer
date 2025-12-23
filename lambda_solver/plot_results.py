@@ -15,18 +15,20 @@ from pathlib import Path
 from collections import defaultdict
 
 # Use a clean style suitable for papers
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams.update({
-    'font.size': 11,
-    'axes.labelsize': 12,
-    'axes.titlesize': 13,
-    'legend.fontsize': 10,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
-    'figure.dpi': 150,
-    'savefig.dpi': 300,
-    'savefig.bbox': 'tight',
-})
+# plt.style.use('seaborn-v0_8-whitegrid')
+plt.rcParams.update(
+    {
+        "font.size": 20,
+        "axes.labelsize": 20,
+        "axes.titlesize": 20,
+        "legend.fontsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+        "figure.dpi": 150,
+        "savefig.dpi": 300,
+        "savefig.bbox": "tight",
+    }
+)
 
 
 def load_results(json_path: str) -> list:
