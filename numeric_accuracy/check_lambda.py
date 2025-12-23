@@ -6,18 +6,38 @@ This tool tests the f function from spectral_ball_utils.py to verify:
 2. Find the zero point of f (suspected to be near 0)
 """
 
+import os
 from typing import Tuple
-import torch
+
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 from scipy.optimize import brentq
 
+# Use a clean style suitable for papers
+# plt.style.use("seaborn-v0_8-whitegrid")
+plt.rcParams.update(
+    {
+        "font.size": 20,
+        "axes.labelsize": 20,
+        "axes.titlesize": 20,
+        "legend.fontsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+        "figure.dpi": 150,
+        "savefig.dpi": 300,
+        "savefig.bbox": "tight",
+    }
+)
 
 # ============================================================================
 # Core functions copied from spectral_ball_utils.py
 # ============================================================================
 
-def _muon_newton_schulz_step(X: torch.Tensor, a: float, b: float, c: float) -> torch.Tensor:
+
+def _muon_newton_schulz_step(
+    X: torch.Tensor, a: float, b: float, c: float
+) -> torch.Tensor:
     """One Newton-Schulz iteration: X ← a·X + X·(b·A + c·A²) where A = X·X^T."""
     A = X @ X.mT
     B = torch.addmm(A, A, A, alpha=c, beta=b)
@@ -64,7 +84,9 @@ def inner_product(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
 
 
 @torch.no_grad()
-def compute_phi(G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_steps: int = 8) -> torch.Tensor:
+def compute_phi(
+    G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_steps: int = 8
+) -> torch.Tensor:
     """φ(λ) = msign(G + λ·Θ)."""
     z = G + lambda_value * Theta
     Phi = msign(z, steps=msign_steps)
@@ -72,7 +94,9 @@ def compute_phi(G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign
 
 
 @torch.no_grad()
-def compute_f(G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_steps: int = 8) -> float:
+def compute_f(
+    G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_steps: int = 8
+) -> float:
     """f(λ) = <Θ, msign(G + λ·Θ)>."""
     Phi = compute_phi(G, Theta, lambda_value, msign_steps)
     f_value = float(inner_product(Theta, Phi).item())
@@ -83,12 +107,14 @@ def compute_f(G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_s
 # Test matrix generation
 # ============================================================================
 
+
 def generate_test_matrices(
     m: int,
     n: int,
     mean: float = 0.0,
     std: float = 0.02,
-    seed: int = 42
+    seed: int = 42,
+    device: torch.device = torch.device("cpu"),
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     """
     Generate test matrices G and Theta.
@@ -99,6 +125,7 @@ def generate_test_matrices(
         mean: Mean of the normal distribution
         std: Standard deviation of the normal distribution
         seed: Random seed for reproducibility
+        device: Device to generate matrices on (CPU or CUDA)
 
     Returns:
         G: Gradient tensor (normalized, as in the source code)
@@ -106,12 +133,12 @@ def generate_test_matrices(
     """
     # Generate G (independent random matrix)
     torch.manual_seed(seed)
-    G_raw = torch.randn(m, n, dtype=torch.float32) * std + mean
+    G_raw = torch.randn(m, n, dtype=torch.float32, device=device) * std + mean
     G = G_raw / (torch.linalg.norm(G_raw, dim=(-2, -1), keepdim=True).clamp_min(1e-8))
 
     # Generate W (independent random matrix, different from G)
     torch.manual_seed(seed + 1000)  # Use different seed for independence
-    W_raw = torch.randn(m, n, dtype=torch.float32) * std + mean
+    W_raw = torch.randn(m, n, dtype=torch.float32, device=device) * std + mean
 
     # Compute SVD of W to get max singular value and vectors
     U, S, Vh = torch.linalg.svd(W_raw, full_matrices=False)
@@ -124,7 +151,7 @@ def generate_test_matrices(
     # Normalize W to the spectral ball: W = W_raw * (target_radius / max_singular_value)
     W = W_raw * (target_radius / max_singular_value)
 
-    u,s,vh = torch.linalg.svd(W, full_matrices=False)
+    u, s, vh = torch.linalg.svd(W, full_matrices=False)
     # Get Theta from W's leading singular vectors: Theta = u @ v^T
     u = u[:, :1]  # Leading left singular vector
     v = vh[:1, :].T  # Leading right singular vector
@@ -137,9 +164,14 @@ def generate_test_matrices(
 # Numerical analysis functions
 # ============================================================================
 
-def find_zero_point(G: torch.Tensor, Theta: torch.Tensor,
-                   lambda_min: float = -1.0, lambda_max: float = 1.0,
-                   msign_steps: int = 8) -> Tuple[float, bool]:
+
+def find_zero_point(
+    G: torch.Tensor,
+    Theta: torch.Tensor,
+    lambda_min: float = -1.0,
+    lambda_max: float = 1.0,
+    msign_steps: int = 8,
+) -> Tuple[float, bool]:
     """
     Find the zero point of f(lambda) using Brent's method.
 
@@ -154,6 +186,7 @@ def find_zero_point(G: torch.Tensor, Theta: torch.Tensor,
         zero_point: The lambda value where f(lambda) = 0
         success: Whether the zero point was found
     """
+
     # Create a wrapper function for scipy
     def f_wrapper(lam):
         return compute_f(G, Theta, lam, msign_steps)
@@ -164,8 +197,10 @@ def find_zero_point(G: torch.Tensor, Theta: torch.Tensor,
 
     if f_min * f_max > 0:
         # No sign change, try to expand the search range
-        print(f"Warning: No sign change in [{lambda_min}, {lambda_max}]. "
-              f"f({lambda_min})={f_min:.6e}, f({lambda_max})={f_max:.6e}")
+        print(
+            f"Warning: No sign change in [{lambda_min}, {lambda_max}]. "
+            f"f({lambda_min})={f_min:.6e}, f({lambda_max})={f_max:.6e}"
+        )
 
         # Expand range
         if f_min > 0:
@@ -177,7 +212,9 @@ def find_zero_point(G: torch.Tensor, Theta: torch.Tensor,
         f_max = f_wrapper(lambda_max)
 
         if f_min * f_max > 0:
-            print(f"Still no sign change in expanded range [{lambda_min}, {lambda_max}]")
+            print(
+                f"Still no sign change in expanded range [{lambda_min}, {lambda_max}]"
+            )
             return 0.0, False
 
     try:
@@ -192,7 +229,7 @@ def plot_f_lambda_single(
     G: torch.Tensor,
     Theta: torch.Tensor,
     lambda_range: Tuple[float, float] = (-0.1, 0.1),
-    num_points: int = 200,
+    num_points: int = 2000,
     msign_steps: int = 8,
     title: str = "f(λ) = <Θ, msign(G + λ·Θ)>",
     save_path: str = None,
@@ -229,23 +266,28 @@ def plot_f_lambda_single(
 
     # Create plot
     plt.figure(figsize=(10, 6))
-    plt.plot(lambdas, f_values, 'b-', linewidth=2, label='f(λ)')
-    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3, label='f(λ) = 0')
-    plt.axvline(x=0, color='gray', linestyle='--', alpha=0.3, label='λ = 0')
+    plt.plot(lambdas, f_values, "b-", linewidth=2, label="h(λ)")
+    plt.axhline(y=0, color="k", linestyle="--", alpha=0.3, label="h(λ) = 0")
+    plt.axvline(x=0, color="gray", linestyle="--", alpha=0.3, label="λ = 0")
 
     if success:
         f_zero = compute_f(G, Theta, zero_point, msign_steps)
-        plt.plot(zero_point, f_zero, 'ro', markersize=10,
-                label=f'Zero point: λ={zero_point:.6e}, f={f_zero:.6e}')
+        plt.plot(
+            zero_point,
+            f_zero,
+            "ro",
+            markersize=10,
+            label=f"Zero point: λ={zero_point:.6e}, f={f_zero:.6e}",
+        )
 
-    plt.xlabel('λ', fontsize=12)
-    plt.ylabel('f(λ)', fontsize=12)
-    plt.title(title, fontsize=14)
+    plt.xlabel("λ", fontsize=15)
+    plt.ylabel("h(λ)", fontsize=15)
+    plt.title(title, fontsize=15)
     plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=10)
+    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", alpha=0.9)
 
     if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        plt.savefig(save_path, dpi=600, bbox_inches="tight")
         print(f"Plot saved to {save_path}")
 
     plt.tight_layout()
@@ -262,12 +304,13 @@ def plot_f_lambda_multi_repeat(
     mean: float,
     std: float,
     lambda_range: Tuple[float, float] = (-0.1, 0.1),
-    num_points: int = 200,
+    num_points: int = 2000,
     msign_steps: int = 8,
     n_repeats: int = 5,
     base_seed: int = 42,
     title: str = "f(λ) = <Θ, msign(G + λ·Θ)>",
     save_path: str = None,
+    device: torch.device = torch.device("cpu"),
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Do n_repeats experiments for a given (m, n, mean, std) config, plot all f(λ)
@@ -283,6 +326,7 @@ def plot_f_lambda_multi_repeat(
         base_seed: Base random seed; different repeat uses base_seed + repeat_id
         title: Plot title
         save_path: Path to save the plot (optional)
+        device: Device to generate matrices and perform computations on (CPU or CUDA)
 
     Returns:
         lambdas: shape (num_points,)
@@ -304,24 +348,38 @@ def plot_f_lambda_multi_repeat(
     for rep in range(n_repeats):
         # 使用不同 seed 进行多次独立试验
         seed = base_seed + rep * 10000
-        G, Theta = generate_test_matrices(m, n, mean, std, seed=seed)
+        G, Theta = generate_test_matrices(m, n, mean, std, seed=seed, device=device)
 
         # 计算这一条曲线的 f(λ)
         f_values = np.array([compute_f(G, Theta, lam, msign_steps) for lam in lambdas])
         f_values_all[rep] = f_values
 
         # 每条曲线独立找零点
-        zero_point, success = find_zero_point(G, Theta, lambda_min, lambda_max, msign_steps)
+        zero_point, success = find_zero_point(
+            G, Theta, lambda_min, lambda_max, msign_steps
+        )
         if not success:
             zero_point = np.nan
         zero_points[rep] = zero_point
 
+        # 为不同 repeat 分配不同深浅的绿色系
+        colors = [
+            "#4CAF50",  # 亮绿色
+            "#8BC34A",  # 淡绿色
+            "#CDDC39",  # 黄绿色
+            "#81C784",  # 薄荷绿
+            "#A5D6A7",  # 浅薄荷绿
+        ]
+        color = colors[rep % len(colors)]
+
         # 画出这一条 f(λ) 曲线（所有 repeat 画在同一张图上）
         plt.plot(
-            lambdas, f_values,
-            linewidth=1.5,
+            lambdas,
+            f_values,
+            linewidth=2.5,
             alpha=0.7,
-            label=f"repeat {rep+1}" if rep == 0 else None,  # 避免太多 legend 项
+            color=color,
+            label=f"{n_repeats} repeats" if rep == 0 else None,  # 避免太多 legend 项
         )
 
     # 对 repeat 维度求 f(λ) 的均值和标准差
@@ -333,41 +391,132 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, 'k-', linewidth=2.5, label='mean f(λ) over repeats')
+    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged h(λ) over repeats")
     plt.fill_between(
         lambdas,
         f_mean - f_std,
         f_mean + f_std,
-        color='gray',
+        color="gray",
         alpha=0.2,
-        label='±1 std of f(λ)',
     )
-
-    # 画基准线
-    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3, label='f(λ) = 0')
-    plt.axvline(x=0, color='gray', linestyle='--', alpha=0.3, label='λ = 0')
 
     # 在图里标出 λ* 的均值位置
     if not np.isnan(lambda_mean):
         # 计算在 λ_mean 处的 f_mean 进行标记（插值）
         f_at_lambda_mean = np.interp(lambda_mean, lambdas, f_mean)
+
+        # 改进标记方式：使用更美观的颜色和样式
         plt.plot(
             lambda_mean,
             f_at_lambda_mean,
-            'ro',
-            markersize=8,
-            label=f'λ* mean = {lambda_mean:.3e} ± {lambda_std:.1e}',
+            "o",
+            markersize=5,
+            color="#9C27B0",  # 淡紫色，与绿色系更协调
+            markeredgecolor="#7B1FA2",
+            markeredgewidth=1,
+            alpha=0.9,
+            label="Averaged λ*",
         )
 
-    plt.xlabel('λ', fontsize=12)
-    plt.ylabel('f(λ)', fontsize=12)
-    plt.title(title, fontsize=14)
+        plt.axhline(
+            y=f_at_lambda_mean,
+            linestyle="--",
+            color="#9C27B0",
+            alpha=0.5,
+            linewidth=0.8,
+        )
+        plt.axvline(
+            x=lambda_mean,
+            linestyle="--",
+            color="#9C27B0",
+            alpha=0.5,
+            linewidth=0.8,
+        )
+
+    plt.xlabel("λ")
+    plt.ylabel("h(λ)")
+    plt.title(title)
     plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=9)
+    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", framealpha=0.9)
+    plt.tight_layout()
+
+    # --------------------------
+    # 添加放大的局部区域（右下角）
+    # --------------------------
+    # 创建子图：[left, bottom, width, height]
+    ax_inset = plt.axes([0.6, 0.2, 0.35, 0.35])
+
+    # 放大区域的范围
+    zoom_x_min, zoom_x_max = -0.01, 0.01
+
+    # 在放大区域重新绘制所有曲线
+    for rep in range(n_repeats):
+        f_values = f_values_all[rep]
+        # 只绘制x在放大范围内的部分
+        mask = (lambdas >= zoom_x_min) & (lambdas <= zoom_x_max)
+        ax_inset.plot(
+            lambdas[mask],
+            f_values[mask],
+            linewidth=1.5,
+            alpha=0.7,
+            color=colors[rep % len(colors)],
+        )
+
+    # 在放大区域绘制均值曲线和标准差
+    mask = (lambdas >= zoom_x_min) & (lambdas <= zoom_x_max)
+    ax_inset.plot(lambdas[mask], f_mean[mask], "k-", linewidth=1)
+    # ax_inset.fill_between(
+    #     lambdas[mask],
+    #     (f_mean - f_std)[mask],
+    #     (f_mean + f_std)[mask],
+    #     color="gray",
+    #     alpha=0.2,
+    # )
+
+    # 如果lambda_mean在放大范围内，也在放大区域标记出来
+    if not np.isnan(lambda_mean) and zoom_x_min <= lambda_mean <= zoom_x_max:
+        f_at_lambda_mean = np.interp(lambda_mean, lambdas, f_mean)
+        ax_inset.plot(
+            lambda_mean,
+            f_at_lambda_mean,
+            "o",
+            markersize=5,
+            color="#9C27B0",
+            markeredgecolor="#7B1FA2",
+            markeredgewidth=1,
+            alpha=0.9,
+        )
+
+    # 在放大区域绘制基准线
+    ax_inset.axhline(
+        y=f_at_lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+    )
+    ax_inset.axvline(
+        x=lambda_mean, linestyle="--", color="#9C27B0", alpha=0.5, linewidth=0.8
+    )
+    ax_inset.text(
+        0.55,
+        0.45,
+        f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
+        transform=ax_inset.transAxes,
+        fontsize=10,
+        color="#9C27B0",
+        alpha=0.8,
+    )
+
+    # 设置放大区域的标题和轴标签
+    ax_inset.set_title(f"Zoom: [{zoom_x_min}, {zoom_x_max}]", fontsize=12)
+    ax_inset.grid(True, alpha=0.3)
+    # 手动设置横轴刻度，显示0和正负各两个刻度
+    ax_inset.set_xticks([-0.01, -0.005, 0, 0.005, 0.01])
+    ax_inset.tick_params(axis="x", labelsize=10)
+    ax_inset.tick_params(axis="y", labelsize=10)
+
+    # 调整布局
     plt.tight_layout()
 
     if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
         print(f"Plot saved to {save_path}")
 
     # 控制外部是否 plt.show()，由 test_f_function 决定
@@ -378,6 +527,7 @@ def plot_f_lambda_multi_repeat(
 # Main test function
 # ============================================================================
 
+
 def test_f_function(
     matrix_sizes: list[Tuple[int, int]] = None,
     init_configs: list[Tuple[float, float]] = None,
@@ -386,6 +536,9 @@ def test_f_function(
     show_plots: bool = True,
     save_plots: bool = False,
     n_repeats: int = 5,  # 新增：每个 size & init config 的重复次数
+    save_dir: str = "results",  # 新增：保存目录
+    device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+    seed: int = 42,
 ):
     """
     Test f(lambda) function for various matrix sizes and initialization configs.
@@ -403,21 +556,23 @@ def test_f_function(
         show_plots: Whether to display plots
         save_plots: Whether to save plots to files
         n_repeats: Number of repeats per (size, init) config
+        save_dir: Directory to save plots (default "results")
+        device: Device to generate matrices and perform computations on (CPU or CUDA)
+        seed: Random seed for reproducibility (default 42)
     """
     if matrix_sizes is None:
         matrix_sizes = [
+            (8, 1024),
             (1024, 2048),
+            (1024, 3072),
             (4096, 1024),
             (6144, 1024),
-            (1024, 3072),
             (8192, 1024),
-            (8, 1024),
         ]
 
     if init_configs is None:
         init_configs = [
-            (0.0, 0.02),    # mean=0.0, std=0.02
-            (0.02, 0.02),   # mean=0.02, std=0.06
+            (0.0, 0.02),  # mean=0.0, std=0.02
         ]
 
     print("=" * 80)
@@ -427,29 +582,38 @@ def test_f_function(
 
     results = []
 
-    for (m, n) in matrix_sizes:
-        for (mean, std) in init_configs:
+    for m, n in matrix_sizes:
+        for mean, std in init_configs:
             print(f"\nMatrix size: {m} x {n}, Init: mean={mean}, std={std}")
             print("-" * 80)
 
             # =========================
             # repeat n 次并画在同一张图上
             # =========================
-            title = f"f(λ) for {m}×{n} matrix (mean={mean}, std={std}), n={n_repeats}"
+            title = f"h(λ) for random ({m},{n}) matrix (μ={mean}, σ={std}) ×{n_repeats}"
             save_path = None
             if save_plots:
-                save_path = f"f_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.png"
+                # Create results directory if it doesn't exist
 
-            lambdas, f_values_all, f_mean, f_std, zero_points = plot_f_lambda_multi_repeat(
-                m, n,
-                mean, std,
-                lambda_range=lambda_range,
-                num_points=200,
-                msign_steps=msign_steps,
-                n_repeats=n_repeats,
-                base_seed=42,
-                title=title,
-                save_path=save_path,
+                save_path = os.path.join(
+                    save_dir, f"h_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.pdf"
+                )
+
+            lambdas, f_values_all, f_mean, f_std, zero_points = (
+                plot_f_lambda_multi_repeat(
+                    m,
+                    n,
+                    mean,
+                    std,
+                    lambda_range=lambda_range,
+                    num_points=2000,
+                    msign_steps=msign_steps,
+                    n_repeats=n_repeats,
+                    base_seed=seed,
+                    title=title,
+                    save_path=save_path,
+                    device=device,
+                )
             )
 
             # 对每个 repeat 再做一次简单的单点 monotonicity 检查
@@ -458,7 +622,9 @@ def test_f_function(
             test_lambdas = [-1, -0.001, 0.0, 0.001, 1]
             for rep in range(n_repeats):
                 seed = 42 + rep * 10000
-                G_rep, Theta_rep = generate_test_matrices(m, n, mean, std, seed=seed)
+                G_rep, Theta_rep = generate_test_matrices(
+                    m, n, mean, std, seed=seed, device=device
+                )
                 print(f"  Repeat {rep + 1} (seed={seed}):")
                 vals = []
                 for lam in test_lambdas:
@@ -493,14 +659,16 @@ def test_f_function(
                     f"std f(λ) = {f_std[idx]:.6e}"
                 )
 
-            results.append({
-                'shape': (m, n),
-                'mean': mean,
-                'std': std,
-                'lambda_mean': lambda_mean,
-                'lambda_std': lambda_std,
-                'zero_points': zero_points.copy(),
-            })
+            results.append(
+                {
+                    "shape": (m, n),
+                    "mean": mean,
+                    "std": std,
+                    "lambda_mean": lambda_mean,
+                    "lambda_std": lambda_std,
+                    "zero_points": zero_points.copy(),
+                }
+            )
 
     # Summary
     print("\n" + "=" * 80)
@@ -520,8 +688,7 @@ def test_f_function(
 
     print("\n" + "=" * 80)
     all_near_zero = all(
-        np.all(np.abs(cfg_result['zero_points']) < 0.01)
-        for cfg_result in results
+        np.all(np.abs(cfg_result["zero_points"]) < 0.01) for cfg_result in results
     )
     print(f"All zero points near 0 (|λ*| < 1e-2 for all repeats): {all_near_zero}")
     print("=" * 80)
@@ -532,10 +699,19 @@ def test_f_function(
 
 if __name__ == "__main__":
     # Run tests with default configurations
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
+    save_dir = "results"
+    os.makedirs(save_dir, exist_ok=True)
+
     test_f_function(
         msign_steps=8,  # Use 8-step Polar Express
         lambda_range=(-1.0, 1.0),
         show_plots=True,
         save_plots=True,
-        n_repeats=5,    # 默认做 5 次 repeat
+        n_repeats=5,  # 默认做 5 次 repeat
+        save_dir=save_dir,
+        device=device,
+        seed=42,
     )
