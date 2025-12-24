@@ -143,8 +143,8 @@ BENCHMARK_ARGS=(
     --benchmark-eval
     --benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
     --benchmark-interval 500
-    --benchmark-sequence-length $SEQ_LEN
-    --benchmark-micro-batch $(($MICRO_BATCH * 4))
+    --benchmark-sequence-length 4096
+    --benchmark-micro-batch 32
 )
 
 

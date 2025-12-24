@@ -1,6 +1,13 @@
+import os
 import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import colors as mcolors
 from matplotlib.font_manager import FontProperties
+import matplotlib.pyplot as plt
+
+# 无显示环境时使用非交互后端，避免 plt.show() 报错
+if os.environ.get("DISPLAY", "") == "":
+    matplotlib.use("Agg")
 
 # 设置科研图表风格
 plt.rcParams['font.family'] = 'serif'
@@ -22,21 +29,76 @@ data_filtered = data[(data['Step'] >= 6000) & (data['Step'] <= 23000)]
 # 定义颜色和线型（厚重配色方案）
 optimizer_styles = {
     'spectral sphere': {'color': '#006400', 'linestyle': '-', 'label': 'Spectral Sphere'},      # 深绿色，实线
-    'muon': {'color': '#00008B', 'linestyle': '-', 'label': 'Muon'},                             # 深橙色，实线
+    'muon': {'color': '#00008B', 'linestyle': '-', 'label': 'Muon'},                             # 深蓝色，实线
     'muon sphere': {'color': '#2E8B57', 'linestyle': '--', 'label': 'Muon Sphere'},             # 海绿色（厚重），虚线
-    'adamw': {'color': '#8B0000', 'linestyle': '-', 'label': 'AdamW'}                            # 道奇蓝，实线
+    'adamw': {'color': '#8B0000', 'linestyle': '-', 'label': 'AdamW'}                            # 深红色，实线
 }
-#深蓝色是#00008B
-# 绘制四条曲线（不使用数据点标记）
+
+def lighten_color(color: str, amount: float = 0.35) -> tuple:
+    """
+    将颜色向白色混合，让颜色"稍微亮一点"。
+    amount ∈ [0, 1]，越大越亮。
+    """
+    r, g, b = mcolors.to_rgb(color)
+    r = r + (1 - r) * amount
+    g = g + (1 - g) * amount
+    b = b + (1 - b) * amount
+    return (r, g, b)
+
+# 绘制四条曲线：每个数据点加同色空心圆圈标记；叠加长期平滑虚线；再加宽透明颜色带表示波动范围
+smooth_window = 5  # 长期平滑窗口（居中）
+band_window = 4    # 波动带窗口
+band_q_low = 0.01
+band_q_high = 0.99
 optimizers = ['adamw', 'muon', 'muon sphere', 'spectral sphere']
 for optimizer in optimizers:
     style = optimizer_styles[optimizer]
-    ax.plot(data_filtered['Step'], data_filtered[optimizer],
+    steps = data_filtered['Step']
+    series = data_filtered[optimizer]
+
+    # 宽透明颜色带：滚动分位数范围
+    q_low = series.rolling(window=band_window, center=True, min_periods=1).quantile(band_q_low)
+    q_high = series.rolling(window=band_window, center=True, min_periods=1).quantile(band_q_high)
+    ax.fill_between(
+        steps,
+        q_low,
+        q_high,
+        color=lighten_color(style['color'], amount=0.50),
+        alpha=0.14,
+        linewidth=0,
+        zorder=0
+    )
+
+    # 主曲线 + 空心圆点
+    ax.plot(steps, series,
             color=style['color'],
             linestyle=style['linestyle'],
             label=style['label'],
-            linewidth=3,
-            alpha=0.95)
+            linewidth=2,
+            alpha=0.95,
+            marker='o',
+            markersize=3.2,
+            markerfacecolor='none',
+            markeredgecolor=style['color'],
+            markeredgewidth=0.9,
+            zorder=3)
+
+    # 长期平滑趋势（透明虚线、稍亮、与主曲线颜色一一对应）
+    smooth_series = (
+        series
+        .rolling(window=smooth_window, center=True, min_periods=1)
+        .mean()
+    )
+    ax.plot(
+        steps,
+        smooth_series,
+        color=lighten_color(style['color'], amount=0.40),
+        linestyle='--',
+        linewidth=2.2,
+        alpha=0.45,
+        label=None,
+        zorder=2
+    )
 
 # 设置坐标轴标签
 ax.set_xlabel('Training Steps', fontsize=14, fontweight='bold')
@@ -62,6 +124,7 @@ ax.legend(
     shadow=True,
     ncol=1,
     prop=legend_font,
+    markerscale=1.3,
     handlelength=2.2,
     handletextpad=0.8,
     labelspacing=0.6,

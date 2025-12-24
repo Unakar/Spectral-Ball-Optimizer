@@ -77,8 +77,6 @@ TRAINING_ARGS=(
     --spectral-ball-solver-max-iterations 20
     --spectral-ball-retract-mode hard
     --spectral-ball-qkv-split-mode head
-    --recompute-activations
-    --recompute-granularity full
 )
 
 

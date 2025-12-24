@@ -18,7 +18,15 @@ plt.rcParams['grid.alpha'] = 0.3
 plt.rcParams['lines.linewidth'] = 2
 
 # 读取合并后的数据
-data = pd.read_csv('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/merged_max_vio.csv')
+data = pd.read_csv('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/triple.csv')
+
+# 重命名列以匹配后续代码
+data = data.rename(columns={
+    'steps': 'Step',
+    'adamw_value': 'AdamW',
+    'muon_value': 'Muon',
+    'muonball_value': 'Spectral_Sphere'  # muonball实际上是spectral sphere
+})
 
 # 过滤数据：只保留0-24000步的数据
 data_filtered = data[(data['Step'] >= 0) & (data['Step'] <= 24000)]
@@ -28,8 +36,9 @@ fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
 # 定义颜色和线型（厚重配色方案）
 optimizer_styles = {
-    'Spectral_Sphere': {'color': '#006400', 'linestyle': '-', 'label': 'Spectral Sphere'},  # 深绿色，实线
-    'AdamW': {'color': '#8B0000', 'linestyle': '-', 'label': 'AdamW'}                        # 深红色，实线
+    'AdamW': {'color': '#8B0000', 'linestyle': '-', 'label': 'AdamW'},                      # 深红色，实线
+    'Muon': {'color': '#00008B', 'linestyle': '-', 'label': 'Muon'},                        # 深蓝色，实线
+    'Spectral_Sphere': {'color': '#006400', 'linestyle': '-', 'label': 'Spectral Sphere'}  # 深绿色，实线
 }
 
 def lighten_color(color: str, amount: float = 0.35) -> tuple:
@@ -44,12 +53,12 @@ def lighten_color(color: str, amount: float = 0.35) -> tuple:
     return (r, g, b)
 
 
-# 绘制两条主曲线：每个数据点加同色空心圆圈标记；叠加长期平滑虚线；再加宽透明颜色带表示波动范围
+# 绘制三条主曲线：每个数据点加同色空心圆圈标记；叠加长期平滑虚线；再加宽透明颜色带表示波动范围
 smooth_window = 5  # 约 11*500=5500 steps 的长期平滑窗口（居中）
 band_window = 4    # 波动带窗口（约 4500 steps）
 band_q_low = 0.01
 band_q_high = 0.99
-for optimizer in ['AdamW', 'Spectral_Sphere']:
+for optimizer in ['AdamW', 'Muon', 'Spectral_Sphere']:
     style = optimizer_styles[optimizer]
     steps = data_filtered['Step']
     series = data_filtered[optimizer]
@@ -72,7 +81,7 @@ for optimizer in ['AdamW', 'Spectral_Sphere']:
             color=style['color'],
             linestyle=style['linestyle'],
             label=style['label'],
-            linewidth=3,
+            linewidth=2,
             alpha=0.95,
             marker='o',
             markersize=3.2,

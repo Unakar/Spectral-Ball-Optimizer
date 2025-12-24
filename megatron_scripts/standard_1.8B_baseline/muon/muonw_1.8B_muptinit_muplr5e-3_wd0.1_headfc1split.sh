@@ -70,8 +70,6 @@ TRAINING_ARGS=(
     --muon-qkv-split-mode head
     --weight-decay 0.1
     --clip-grad 1.0
-    --recompute-activations
-    --recompute-granularity full
 )
 
 

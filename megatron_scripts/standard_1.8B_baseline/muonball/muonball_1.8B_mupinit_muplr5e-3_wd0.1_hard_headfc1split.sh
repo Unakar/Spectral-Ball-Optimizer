@@ -74,8 +74,6 @@ TRAINING_ARGS=(
     --muon-ball-power-iteration-steps 100
     --muon-ball-retract-mode hard
     --muon-ball-qkv-split-mode head
-    --recompute-activations
-    --recompute-granularity full
 )
 
 
@@ -104,9 +102,7 @@ MODEL_ARGS=(
     --transformer-impl transformer_engine
     --attention-backend fused
     --init-method-std 0.02
-    --split-qkv-init
     --split-qkv-init-mode head
-    --split-fc1-init
     --spectral-mup-init
     --use-cpu-initialization
 )
