@@ -1,9 +1,13 @@
 import os
+import sys
+
+# 支持直接运行脚本
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from ..utils import (
+from utils import (
     DARK_COLORS,
     lighten_color,
     save_figure,
@@ -14,8 +18,12 @@ from ..utils import (
 
 setup_plt_style()
 
-result_dir = os.path.join(os.path.dirname(__file__), "results")
-data = pd.read_csv(os.path.join(result_dir, "moe_lmloss.csv"))
+# 数据目录和输出目录
+raw_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "raw_data")
+output_dir = os.path.join(os.path.dirname(__file__), "results", "moe")
+os.makedirs(output_dir, exist_ok=True)
+
+data = pd.read_csv(os.path.join(raw_data_dir, "moe_lmloss.csv"))
 
 fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
@@ -37,7 +45,7 @@ optimizer_styles = {
 
 
 # Plot four curves with volatility bands
-band_window = 4
+band_window = 2
 band_q_low = 0.01
 band_q_high = 0.99
 optimizers = ["adamw", "muon", "muon sphere", "spectral sphere"]
@@ -99,5 +107,5 @@ set_legend_style(ax, loc="upper right")
 fig.set_constrained_layout(False)
 plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
-output_file = os.path.join(result_dir, "moe_val_loss_comparison.pdf")
+output_file = os.path.join(output_dir, "moe_val_loss_comparison.pdf")
 save_figure(fig, output_file, formats=["pdf", "png", "eps"])

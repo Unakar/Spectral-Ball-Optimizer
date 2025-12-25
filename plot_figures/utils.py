@@ -35,9 +35,9 @@ def setup_plt_style():
     # Use serif font (DejaVu Serif as primary)
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
-    rcParams["font.size"] = 16
-    rcParams["axes.labelsize"] = 18
-    rcParams["axes.titlesize"] = 24
+    rcParams["font.size"] = 14
+    rcParams["axes.labelsize"] = 14
+    rcParams["axes.titlesize"] = 16
     rcParams["xtick.labelsize"] = 12
     rcParams["ytick.labelsize"] = 12
     rcParams["legend.fontsize"] = 16
