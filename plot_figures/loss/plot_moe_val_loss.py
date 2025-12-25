@@ -1,10 +1,9 @@
 import os
 
-import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import colors as mcolors
-from utils import (
+
+from ..utils import (
     lighten_color,
     save_figure,
     set_axis_limits,
@@ -13,7 +12,8 @@ from utils import (
 
 setup_publication_style()
 
-data = pd.read_csv("results/moe_lmloss.csv")
+result_dir = os.path.join(os.path.dirname(__file__), "results")
+data = pd.read_csv(os.path.join(result_dir, "moe_lmloss.csv"))
 
 fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
@@ -107,5 +107,5 @@ legend.get_frame().set_linewidth(1.0)
 fig.set_constrained_layout(False)
 plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
-output_file = "results/moe_val_loss_comparison.pdf"
+output_file = os.path.join(result_dir, "moe_val_loss_comparison.pdf")
 save_figure(fig, output_file, formats=["pdf", "png", "eps"])

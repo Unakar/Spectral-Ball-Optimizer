@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # 导入通用工具函数
-from utils import (
+from plot_figures.utils import (
     parse_training_log_file,
     save_figure,
     set_axis_limits,

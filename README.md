@@ -9,3 +9,10 @@ Pretrain code is avaliable at https://github.com/Unakar/Megatron-LM/tree/spectra
    1. `precision` : Check precision of lambda-solver
    2. `overhead` : Check Overhead of lambda-solver
    3. `loss` : Code for plotting loss figures
+   
+## Usage
+
+```bash
+uv sync
+uv run -m plot_figures.loss.plot_moe_val_loss
+```
