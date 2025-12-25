@@ -18,13 +18,13 @@ plt.rcParams['grid.alpha'] = 0.3
 plt.rcParams['lines.linewidth'] = 2
 
 # 读取数据
-data = pd.read_csv('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_lmloss.csv')
+data = pd.read_csv("/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_lmloss.csv")
 
 # 创建图表
 fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
 # 过滤数据：只保留6000-23000步的数据
-data_filtered = data[(data['Step'] >= 6000) & (data['Step'] <= 23000)]
+data_filtered = data[(data["Step"] >= 6000) & (data["Step"] <= 23000)]
 
 # 定义颜色和线型（厚重配色方案）
 optimizer_styles = {
@@ -101,8 +101,8 @@ for optimizer in optimizers:
     )
 
 # 设置坐标轴标签
-ax.set_xlabel('Training Steps', fontsize=14, fontweight='bold')
-ax.set_ylabel('Val Loss', fontsize=14, fontweight='bold')
+ax.set_xlabel("Training Steps", fontsize=14, fontweight="bold")
+ax.set_ylabel("Val Loss", fontsize=14, fontweight="bold")
 
 # 设置标题（可选）
 # ax.set_title('Validation Loss vs Training Steps for Different Optimizers',
@@ -110,15 +110,15 @@ ax.set_ylabel('Val Loss', fontsize=14, fontweight='bold')
 
 # 设置坐标轴范围（右侧留白）
 ax.set_xlim(6000, 24000)
-#ax.set_ylim(top=2.7)
+# ax.set_ylim(top=2.7)
 
 # 添加网格
-ax.grid(True, linestyle='--', alpha=0.3, linewidth=0.8)
+ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8)
 
 # 设置图例
-legend_font = FontProperties(weight='bold', size=13)
+legend_font = FontProperties(weight="bold", size=13)
 ax.legend(
-    loc='upper right',
+    loc="upper right",
     frameon=True,
     fancybox=True,
     shadow=True,
@@ -131,8 +131,8 @@ ax.legend(
 )
 
 # 设置刻度
-ax.tick_params(axis='both', which='major', labelsize=11, direction='in', length=6)
-ax.tick_params(axis='both', which='minor', direction='in', length=3)
+ax.tick_params(axis="both", which="major", labelsize=11, direction="in", length=6)
+ax.tick_params(axis="both", which="minor", direction="in", length=3)
 
 # 启用次要刻度
 ax.minorticks_on()
@@ -141,10 +141,15 @@ ax.minorticks_on()
 plt.tight_layout()
 
 # 保存图表（多种格式）
-plt.savefig('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_val_loss_comparison.png',
-            dpi=300, bbox_inches='tight')
-plt.savefig('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_val_loss_comparison.pdf',
-            bbox_inches='tight')
+plt.savefig(
+    "/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_val_loss_comparison.png",
+    dpi=300,
+    bbox_inches="tight",
+)
+plt.savefig(
+    "/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/moe_val_loss_comparison.pdf",
+    bbox_inches="tight",
+)
 
 print("图表已保存：")
 print("  - moe_val_loss_comparison.png (高分辨率PNG)")

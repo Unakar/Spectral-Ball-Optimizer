@@ -20,6 +20,8 @@ import numpy as np
 plt.rcParams.update(
     {
         "mathtext.fontset": "cm",
+        "font.family": "serif",
+        "font.serif": ["Times New Roman"],
         "font.size": 16,
         "axes.labelsize": 18,
         "axes.titlesize": 24,
@@ -234,7 +236,15 @@ def plot_overhead_by_shape(results: list, output_dir: Path):
     ax.set_title("$\\lambda$ Solver Overhead Across Different Matrix Shapes")
     ax.set_xticks(range(len(shapes)))
     ax.set_xticklabels(shapes, rotation=45, ha="right")
-    ax.legend(loc="upper center", facecolor="white", edgecolor="gray", framealpha=0.8, bbox_to_anchor=(0.5,0.98), ncol=3, borderaxespad=0)
+    ax.legend(
+        loc="upper center",
+        facecolor="white",
+        edgecolor="gray",
+        framealpha=0.8,
+        bbox_to_anchor=(0.5, 0.98),
+        ncol=3,
+        borderaxespad=0,
+    )
     ax.set_ylim(0, None)
 
     plt.tight_layout()
