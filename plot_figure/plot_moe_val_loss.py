@@ -57,7 +57,7 @@ for optimizer in optimizers:
         steps,
         q_low,
         q_high,
-        color=lighten_color(style["color"], amount=0.50),
+        color=lighten_color(style["color"], amount=0.40),
         alpha=0.14,
         linewidth=0,
         zorder=0,
@@ -71,19 +71,18 @@ for optimizer in optimizers:
         linestyle=style["linestyle"],
         marker="o",
         label=style["label"],
-        linewidth=1.8,
         alpha=0.85,
         zorder=2,
     )
 
 
 # 设置坐标轴标签
-ax.set_xlabel("Training Steps", fontsize=13, fontweight="bold")
-ax.set_ylabel("Val Loss", fontsize=13, fontweight="bold")
+ax.set_xlabel("Training Steps", fontweight="bold")
+ax.set_ylabel("Val Loss", fontweight="bold")
 
 # 设置标题（可选）
-ax.set_title('MOE Validation Loss for Different Optimizers',
-             fontsize=16, fontweight='bold')
+# ax.set_title('MOE Validation Loss for Different Optimizers',
+#              fontweight='bold')
 
 # 设置坐标轴范围
 set_axis_limits(ax, xlim=(6000, 24000), ylim=(2.4, 2.8))

@@ -21,16 +21,16 @@ def setup_publication_style():
     # 使用 Times New Roman 字体（Nature 等期刊常用）
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
-    rcParams["font.size"] = 11
-    rcParams["axes.labelsize"] = 12
-    rcParams["axes.titlesize"] = 12
-    rcParams["xtick.labelsize"] = 10
-    rcParams["ytick.labelsize"] = 10
-    rcParams["legend.fontsize"] = 10
-    rcParams["figure.titlesize"] = 13
+    rcParams["font.size"] = 16
+    rcParams["axes.labelsize"] = 18
+    rcParams["axes.titlesize"] = 24
+    rcParams["xtick.labelsize"] = 12
+    rcParams["ytick.labelsize"] = 12
+    rcParams["legend.fontsize"] = 16
+    rcParams["figure.titlesize"] = 24
 
     # 设置线条和标记
-    rcParams["lines.linewidth"] = 1.5
+    rcParams["lines.linewidth"] = 2.5
     rcParams["lines.markersize"] = 4
 
     # 设置坐标轴
