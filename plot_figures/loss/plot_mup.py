@@ -87,7 +87,7 @@ def set_lr_xticks(ax):
     ax.set_xscale('log')
     ax.xaxis.set_major_locator(FixedLocator(ALL_LR_TICKS))
     ax.xaxis.set_major_formatter(FuncFormatter(format_lr_tick))
-    ax.tick_params(axis='x', rotation=45)
+    ax.tick_params(axis='x', rotation=45, labelsize=10)
 
 
 def load_and_process_data(csv_path: Path) -> pd.DataFrame:
@@ -400,7 +400,7 @@ def plot_mup_comparison():
         [0], [0],
         marker='*',
         color='gray',
-        markersize=12,
+        markersize=14,
         linestyle='None',
         markeredgecolor='white',
         markeredgewidth=1.0,
@@ -520,7 +520,7 @@ def plot_single_file(csv_path: Path, output_name: str = None):
         shadow=False,
         framealpha=0.95,
         edgecolor='black',
-        fontsize=10,
+        fontsize=14,
         markerscale=0.8,
     )
     legend.get_frame().set_linewidth(1.0)
