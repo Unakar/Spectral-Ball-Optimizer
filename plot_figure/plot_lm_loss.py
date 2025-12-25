@@ -8,82 +8,17 @@
 日期: 2025-12-24
 """
 
-import re
-
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import rcParams
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 
-
-# 设置论文级别的绘图参数
-def setup_publication_style():
-    """设置符合顶级期刊要求的绘图风格"""
-    # 使用 Times New Roman 字体（Nature 等期刊常用）
-    rcParams["font.family"] = "serif"
-    rcParams["font.serif"] = ["Times New Roman", "DejaVu Serif"]
-    rcParams["font.size"] = 11
-    rcParams["axes.labelsize"] = 12
-    rcParams["axes.titlesize"] = 12
-    rcParams["xtick.labelsize"] = 10
-    rcParams["ytick.labelsize"] = 10
-    rcParams["legend.fontsize"] = 10
-    rcParams["figure.titlesize"] = 13
-
-    # 设置线条和标记
-    rcParams["lines.linewidth"] = 1.5
-    rcParams["lines.markersize"] = 4
-
-    # 设置坐标轴
-    rcParams["axes.linewidth"] = 1.0
-    rcParams["xtick.major.width"] = 1.0
-    rcParams["ytick.major.width"] = 1.0
-    rcParams["xtick.minor.width"] = 0.8
-    rcParams["ytick.minor.width"] = 0.8
-
-    # 使用高质量输出
-    rcParams["figure.dpi"] = 300
-    rcParams["savefig.dpi"] = 300
-    rcParams["savefig.bbox"] = "tight"
-    rcParams["savefig.pad_inches"] = 0.05
-
-    # 使用 PDF Type 42 字体（期刊要求）
-    rcParams["pdf.fonttype"] = 42
-    rcParams["ps.fonttype"] = 42
-
-
-def parse_training_log_file(log_file, min_step=2000, max_step=6500):
-    """
-    解析训练日志文件，提取迭代步数和训练损失值
-
-    参数:
-        log_file: 日志文件路径
-        min_step: 最小步数
-        max_step: 最大步数
-
-    返回:
-        iterations: 迭代步数列表
-        losses: 损失值列表
-    """
-    iterations = []
-    losses = []
-
-    # 正则表达式匹配训练日志行
-    pattern = r"iteration\s+(\d+)/.*lm loss:\s+([\d.E+-]+)"
-
-    with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
-        for line in f:
-            match = re.search(pattern, line)
-            if match:
-                iteration = int(match.group(1))
-                # 只保留指定范围内的数据
-                if min_step <= iteration <= max_step:
-                    loss = float(match.group(2))
-                    iterations.append(iteration)
-                    losses.append(loss)
-
-    return np.array(iterations), np.array(losses)
+# 导入通用工具函数
+from utils import (
+    parse_training_log_file,
+    save_figure,
+    set_axis_limits,
+    setup_publication_style,
+)
 
 
 def plot_training_loss_curves(
@@ -131,17 +66,8 @@ def plot_training_loss_curves(
     ax.set_xlabel("Training Steps", fontsize=13, fontweight="bold")
     ax.set_ylabel("LM Loss", fontsize=13, fontweight="bold")
 
-    # 设置x轴范围为1000-7000（留白），数据点在1500-6500
-    ax.set_xlim(1500, 7000)
-
-    # 设置y轴范围为1.89到2.34，间隔0.05
-    ax.set_ylim(1.66, 2.11)
-
-    # 设置y轴刻度，间隔0.05
-    import matplotlib.ticker as ticker
-
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.05))
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+    # 设置y轴范围和刻度
+    set_axis_limits(ax, xlim=(1500, 7000), ylim=(1.66, 2.11), y_tick_interval=0.05)
 
     # 添加网格
     ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
@@ -163,20 +89,8 @@ def plot_training_loss_curves(
     plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
     # 保存图形（多种格式）
-    # PDF格式 - 用于论文投稿
-    pdf_file = output_file.replace(".pdf", "") + ".pdf"
-    plt.savefig(pdf_file, format="pdf", dpi=300, bbox_inches="tight")
-    print(f"\n已保存 PDF 格式: {pdf_file}")
-
-    # PNG格式 - 用于预览和演示
-    png_file = output_file.replace(".pdf", "") + ".png"
-    plt.savefig(png_file, format="png", dpi=300, bbox_inches="tight")
-    print(f"已保存 PNG 格式: {png_file}")
-
-    # EPS格式 - 某些期刊要求
-    eps_file = output_file.replace(".pdf", "") + ".eps"
-    plt.savefig(eps_file, format="eps", dpi=300, bbox_inches="tight")
-    print(f"已保存 EPS 格式: {eps_file}")
+    print("\n")
+    save_figure(fig, output_file, formats=["pdf", "png", "eps"])
 
     print("\n绘图完成！")
     print(f"图形已保存为多种格式，可直接用于论文投稿。")

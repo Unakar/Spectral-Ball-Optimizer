@@ -19,15 +19,17 @@ plt.rcParams["grid.alpha"] = 0.3
 plt.rcParams["lines.linewidth"] = 2
 
 # 读取合并后的数据
-data = pd.read_csv('/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/triple.csv')
+data = pd.read_csv("/home/t2vg-a100-G2-1/a_xietian/dev/numeric/run_data/triple.csv")
 
 # 重命名列以匹配后续代码
-data = data.rename(columns={
-    'steps': 'Step',
-    'adamw_value': 'AdamW',
-    'muon_value': 'Muon',
-    'muonball_value': 'Spectral_Sphere'  # muonball实际上是spectral sphere
-})
+data = data.rename(
+    columns={
+        "steps": "Step",
+        "adamw_value": "AdamW",
+        "muon_value": "Muon",
+        "muonball_value": "Spectral_Sphere",  # muonball实际上是spectral sphere
+    }
+)
 
 # 过滤数据：只保留0-24000步的数据
 data_filtered = data[(data["Step"] >= 0) & (data["Step"] <= 24000)]
@@ -37,9 +39,13 @@ fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
 # 定义颜色和线型（厚重配色方案）
 optimizer_styles = {
-    'AdamW': {'color': '#8B0000', 'linestyle': '-', 'label': 'AdamW'},                      # 深红色，实线
-    'Muon': {'color': '#00008B', 'linestyle': '-', 'label': 'Muon'},                        # 深蓝色，实线
-    'Spectral_Sphere': {'color': '#006400', 'linestyle': '-', 'label': 'Spectral Sphere'}  # 深绿色，实线
+    "AdamW": {"color": "#8B0000", "linestyle": "-", "label": "AdamW"},  # 深红色，实线
+    "Muon": {"color": "#00008B", "linestyle": "-", "label": "Muon"},  # 深蓝色，实线
+    "Spectral_Sphere": {
+        "color": "#006400",
+        "linestyle": "-",
+        "label": "Spectral Sphere",
+    },  # 深绿色，实线
 }
 
 
@@ -60,7 +66,7 @@ smooth_window = 5  # 约 11*500=5500 steps 的长期平滑窗口（居中）
 band_window = 4  # 波动带窗口（约 4500 steps）
 band_q_low = 0.01
 band_q_high = 0.99
-for optimizer in ['AdamW', 'Muon', 'Spectral_Sphere']:
+for optimizer in ["AdamW", "Muon", "Spectral_Sphere"]:
     style = optimizer_styles[optimizer]
     steps = data_filtered["Step"]
     series = data_filtered[optimizer]
@@ -83,18 +89,21 @@ for optimizer in ['AdamW', 'Muon', 'Spectral_Sphere']:
     )
 
     # 主曲线 + 空心圆点
-    ax.plot(steps, series,
-            color=style['color'],
-            linestyle=style['linestyle'],
-            label=style['label'],
-            linewidth=2,
-            alpha=0.95,
-            marker='o',
-            markersize=3.2,
-            markerfacecolor='none',
-            markeredgecolor=style['color'],
-            markeredgewidth=0.9,
-            zorder=3)
+    ax.plot(
+        steps,
+        series,
+        color=style["color"],
+        linestyle=style["linestyle"],
+        label=style["label"],
+        linewidth=2,
+        alpha=0.95,
+        marker="o",
+        markersize=3.2,
+        markerfacecolor="none",
+        markeredgecolor=style["color"],
+        markeredgewidth=0.9,
+        zorder=3,
+    )
 
     # 长期平滑趋势（透明虚线、稍亮、与主曲线颜色一一对应）
     smooth_series = series.rolling(
