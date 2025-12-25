@@ -83,9 +83,9 @@ def plot_overhead_vs_tolerance(results: list, output_dir: Path):
         alpha=0.85,
     )
 
-    ax.set_xlabel("Tolerance ($\\tau$)")
-    ax.set_ylabel("Overhead Ratio ($\\times$)")
-    ax.set_title("$\\lambda$ Solver Overhead versus Tolerance")
+    ax.set_xlabel("Tolerance ($\\tau$)", fontweight="bold")
+    ax.set_ylabel("Overhead Ratio ($\\times$)", fontweight="bold")
+    # ax.set_title("$\\lambda$ Solver Overhead versus Tolerance")
     ax.set_xticks(range(len(tolerances)))
     ax.set_xticklabels(tol_labels)
 
@@ -103,6 +103,9 @@ def plot_overhead_vs_tolerance(results: list, output_dir: Path):
     set_axis_limits(ax, ylim=(0, max(overheads) * 1.25))
     ax.axhline(y=1.2, color="grey", linestyle="--", label="No overhead (Muon)")
     set_legend_style(ax, loc="upper right")
+
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
     output_path = output_dir / "overhead_vs_tolerance.pdf"
     save_figure(fig, str(output_path))
@@ -127,31 +130,31 @@ def plot_msign_calls_breakdown(results: list, output_dir: Path):
     x = np.arange(len(tolerances))
     width = 0.6
 
-    bars1 = ax.bar(
+    ax.bar(
         x,
         bracket_steps,
         width,
         label="Bracket",
-        color="#3498db",
+        color=LIGHT_COLORS[3],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
-    bars2 = ax.bar(
+    ax.bar(
         x,
         bisect_steps,
         width,
         bottom=bracket_steps,
         label="Bisection",
-        color="#e74c3c",
+        color=LIGHT_COLORS[0],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
 
-    ax.set_xlabel("Tolerance ($\\tau$)")
-    ax.set_ylabel("Number of $\\operatorname{msign}$ Calls")
-    ax.set_title("$\\operatorname{msign}$ Calls Breakdown: Bracket versus Bisection")
+    ax.set_xlabel("Tolerance ($\\tau$)", fontweight="bold")
+    ax.set_ylabel("Number of $\\operatorname{msign}$ Calls", fontweight="bold")
+    # ax.set_title("$\operatorname{msign}$ Calls Breakdown: Bracket versus Bisection")
     ax.set_xticks(x)
     ax.set_xticklabels(tol_labels)
 
@@ -172,6 +175,9 @@ def plot_msign_calls_breakdown(results: list, output_dir: Path):
     )
     set_legend_style(ax, loc="upper right")
 
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
     output_path = output_dir / "msign_calls_breakdown.pdf"
     save_figure(fig, str(output_path))
     plt.close()
@@ -190,10 +196,10 @@ def plot_overhead_by_shape(results: list, output_dir: Path):
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    colors = {"0.01": "#2ecc71", "0.001": "#3498db", "0.0001": "#e74c3c"}
-    markers = {"0.01": "o", "0.001": "s", "0.0001": "^"}
+    tol_colors = list(LIGHT_COLORS[: len(by_tol)])
+    tol_markers = ["o", "s", "^"]
 
-    for tol in sorted(by_tol.keys()):
+    for i, tol in enumerate(sorted(by_tol.keys())):
         items = by_tol[tol]
         # Sort by total elements
         items_sorted = sorted(items, key=lambda x: x["shape"][0] * x["shape"][1])
@@ -201,35 +207,28 @@ def plot_overhead_by_shape(results: list, output_dir: Path):
         shapes = [f"{r['shape'][0]}×{r['shape'][1]}" for r in items_sorted]
         overheads = [r["overhead_ratio"] for r in items_sorted]
 
-        tol_str = str(tol)
         ax.plot(
             range(len(shapes)),
             overheads,
-            marker=markers[tol_str],
+            marker=tol_markers[i],
             markersize=7,
-            linewidth=2,
             label=f"$\\tau = 10^{{{int(np.log10(tol))}}}$",
-            color=colors[tol_str],
+            color=tol_colors[i],
             alpha=0.85,
         )
 
-    ax.set_xlabel("Matrix Shape")
-    ax.set_ylabel("Overhead Ratio ($\\times$)")
-    ax.set_title("$\\lambda$ Solver Overhead Across Different Matrix Shapes")
+    ax.set_xlabel("Matrix Shape", fontweight="bold")
+    ax.set_ylabel("Overhead Ratio ($\\times$)", fontweight="bold")
+    # ax.set_title("$\lambda$ Solver Overhead Across Different Matrix Shapes")
     ax.set_xticks(range(len(shapes)))
     ax.set_xticklabels(shapes, rotation=45, ha="right")
 
     # Set axis limits and legend
     set_axis_limits(ax, ylim=(0, 13))
-    ax.legend(
-        loc="upper center",
-        facecolor="white",
-        edgecolor="gray",
-        framealpha=0.8,
-        bbox_to_anchor=(0.5, 0.98),
-        ncol=3,
-        borderaxespad=0,
-    )
+    set_legend_style(ax, loc="upper right")
+
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
     output_path = output_dir / "overhead_by_shape.pdf"
     save_figure(fig, str(output_path))
@@ -256,7 +255,7 @@ def plot_time_absolute(results: list, output_dir: Path):
     x = np.arange(len(shapes))
     width = 0.35
 
-    bars1 = ax.bar(
+    ax.bar(
         x - width / 2,
         msign_times,
         width,
@@ -266,7 +265,7 @@ def plot_time_absolute(results: list, output_dir: Path):
         linewidth=1.2,
         alpha=0.85,
     )
-    bars2 = ax.bar(
+    ax.bar(
         x + width / 2,
         solve_times,
         width,
@@ -277,12 +276,15 @@ def plot_time_absolute(results: list, output_dir: Path):
         alpha=0.85,
     )
 
-    ax.set_xlabel("Matrix Shape")
-    ax.set_ylabel("Time (ms)")
-    ax.set_title(f"Absolute Runtime Comparison ($\\tau = 10^{{-3}}$)")
+    ax.set_xlabel("Matrix Shape", fontweight="bold")
+    ax.set_ylabel("Time (ms)", fontweight="bold")
+    # ax.set_title(f"Absolute Runtime Comparison ($\tau = 10^{{-3}}$)")
     ax.set_xticks(x)
     ax.set_xticklabels(shapes, rotation=45, ha="right")
     set_legend_style(ax, loc="upper left")
+
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
     output_path = output_dir / "time_absolute.pdf"
     save_figure(fig, str(output_path))

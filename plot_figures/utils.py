@@ -40,17 +40,11 @@ def setup_plt_style():
     # Use serif font (DejaVu Serif as primary)
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
-<<<<<<< Updated upstream
-    rcParams["font.size"] = 14
-    rcParams["axes.labelsize"] = 14
-    rcParams["axes.titlesize"] = 16
-=======
     rcParams["font.size"] = 16
     rcParams["mathtext.fontset"] = "cm"
 
     rcParams["axes.labelsize"] = 18
     rcParams["axes.titlesize"] = 24
->>>>>>> Stashed changes
     rcParams["xtick.labelsize"] = 12
     rcParams["ytick.labelsize"] = 12
     rcParams["legend.fontsize"] = 16
@@ -130,7 +124,7 @@ def parse_training_log_file(log_file, min_step=2000, max_step=6500):
     return np.array(iterations), np.array(losses)
 
 
-def save_figure(fig, output_file, formats=["pdf", "png", "eps"]):
+def save_figure(fig, output_file, formats=["pdf", "png", "eps"], bbox_inches="tight"):
     """
     Save figure in multiple formats
 
@@ -143,7 +137,7 @@ def save_figure(fig, output_file, formats=["pdf", "png", "eps"]):
 
     for fmt in formats:
         file_path = f"{base_name}.{fmt}"
-        fig.savefig(file_path, format=fmt, dpi=300, bbox_inches="tight")
+        fig.savefig(file_path, format=fmt, dpi=300, bbox_inches=bbox_inches)
         print(f"Saved {fmt.upper()} format: {file_path}")
 
 
