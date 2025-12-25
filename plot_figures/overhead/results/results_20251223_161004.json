@@ -1,0 +1,488 @@
+[
+  {
+    "shape": [
+      1024,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.5,
+    "std_bisection_steps": 0.5,
+    "avg_bracket_steps": 1.5,
+    "std_bracket_steps": 0.5,
+    "avg_total_msign_calls": 2.0,
+    "avg_solve_time_ms": 5.496121197938919,
+    "std_solve_time_ms": 4.723228207012123,
+    "avg_pure_msign_time_ms": 1.35207399725914,
+    "overhead_ratio": 4.064955918892305,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 2.9,
+    "std_bisection_steps": 1.3,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.3,
+    "avg_total_msign_calls": 4.8,
+    "avg_solve_time_ms": 7.157354429364204,
+    "std_solve_time_ms": 2.196319789650518,
+    "avg_pure_msign_time_ms": 1.3161666691303253,
+    "overhead_ratio": 5.4380304540712325,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 5.9,
+    "std_bisection_steps": 1.5132745950421556,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 7.9,
+    "avg_solve_time_ms": 11.304459348320961,
+    "std_solve_time_ms": 2.042333679695301,
+    "avg_pure_msign_time_ms": 1.391347125172615,
+    "overhead_ratio": 8.12483034880206,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.5,
+    "std_bisection_steps": 0.5,
+    "avg_bracket_steps": 1.5,
+    "std_bracket_steps": 0.5,
+    "avg_total_msign_calls": 2.0,
+    "avg_solve_time_ms": 3.2448172569274902,
+    "std_solve_time_ms": 1.5959521551593385,
+    "avg_pure_msign_time_ms": 1.3921402394771576,
+    "overhead_ratio": 2.330812058234979,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.0,
+    "std_bisection_steps": 1.1832159566199232,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 5.0,
+    "avg_solve_time_ms": 7.603966444730759,
+    "std_solve_time_ms": 1.7748303920234405,
+    "avg_pure_msign_time_ms": 1.352187991142273,
+    "overhead_ratio": 5.6234536133598105,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 7.1,
+    "std_bisection_steps": 1.445683229480096,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 9.1,
+    "avg_solve_time_ms": 13.685081154108047,
+    "std_solve_time_ms": 2.01411988499847,
+    "avg_pure_msign_time_ms": 1.4569967985153198,
+    "overhead_ratio": 9.392663846655772,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.7,
+    "std_bisection_steps": 0.6403124237432849,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.8306623862918074,
+    "avg_total_msign_calls": 2.5999999999999996,
+    "avg_solve_time_ms": 1.9714225083589554,
+    "std_solve_time_ms": 1.0259727645972145,
+    "avg_pure_msign_time_ms": 0.6428956985473633,
+    "overhead_ratio": 3.0664733218987577,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.7,
+    "std_bisection_steps": 1.1,
+    "avg_bracket_steps": 2.3,
+    "std_bracket_steps": 0.45825756949558405,
+    "avg_total_msign_calls": 6.0,
+    "avg_solve_time_ms": 4.359466955065727,
+    "std_solve_time_ms": 0.847584987267022,
+    "avg_pure_msign_time_ms": 0.6446138024330139,
+    "overhead_ratio": 6.762912830304698,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 7.0,
+    "std_bisection_steps": 2.0,
+    "avg_bracket_steps": 2.3,
+    "std_bracket_steps": 0.45825756949558405,
+    "avg_total_msign_calls": 9.3,
+    "avg_solve_time_ms": 7.053392380475998,
+    "std_solve_time_ms": 1.6608894108059316,
+    "avg_pure_msign_time_ms": 0.6442103534936905,
+    "overhead_ratio": 10.948896338321703,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      6144,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.3,
+    "std_bisection_steps": 0.45825756949558394,
+    "avg_bracket_steps": 1.4,
+    "std_bracket_steps": 0.48989794855663565,
+    "avg_total_msign_calls": 1.7,
+    "avg_solve_time_ms": 3.0386440455913544,
+    "std_solve_time_ms": 1.586216000251721,
+    "avg_pure_msign_time_ms": 1.5785116702318192,
+    "overhead_ratio": 1.9250057525042568,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      6144,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.6,
+    "std_bisection_steps": 0.9165151389911681,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 5.6,
+    "avg_solve_time_ms": 9.881090372800827,
+    "std_solve_time_ms": 1.6088178401713165,
+    "avg_pure_msign_time_ms": 1.577993854880333,
+    "overhead_ratio": 6.261805356365065,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      6144,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 6.9,
+    "std_bisection_steps": 0.7,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 8.9,
+    "avg_solve_time_ms": 16.56135320663452,
+    "std_solve_time_ms": 3.0552588819246225,
+    "avg_pure_msign_time_ms": 1.5788447111845016,
+    "overhead_ratio": 10.489539021357993,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      6144
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.4,
+    "std_bisection_steps": 0.48989794855663565,
+    "avg_bracket_steps": 1.4,
+    "std_bracket_steps": 0.48989794855663565,
+    "avg_total_msign_calls": 1.7999999999999998,
+    "avg_solve_time_ms": 3.081956133246422,
+    "std_solve_time_ms": 1.62963138678048,
+    "avg_pure_msign_time_ms": 1.5245232731103897,
+    "overhead_ratio": 2.021586805269623,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      6144
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 2.9,
+    "std_bisection_steps": 1.374772708486752,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.3,
+    "avg_total_msign_calls": 4.8,
+    "avg_solve_time_ms": 8.17977450788021,
+    "std_solve_time_ms": 2.707724385783188,
+    "avg_pure_msign_time_ms": 1.572360098361969,
+    "overhead_ratio": 5.2022272228871875,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      6144
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 7.2,
+    "std_bisection_steps": 0.6,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 9.2,
+    "avg_solve_time_ms": 15.530965104699135,
+    "std_solve_time_ms": 1.0905907316471504,
+    "avg_pure_msign_time_ms": 1.5230018645524979,
+    "overhead_ratio": 10.19760084749639,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      8192,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.2,
+    "std_bisection_steps": 0.4,
+    "avg_bracket_steps": 1.2,
+    "std_bracket_steps": 0.4,
+    "avg_total_msign_calls": 1.4,
+    "avg_solve_time_ms": 3.093799576163292,
+    "std_solve_time_ms": 1.7404013226701451,
+    "avg_pure_msign_time_ms": 1.9280526787042618,
+    "overhead_ratio": 1.604623986852094,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      8192,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 2.9,
+    "std_bisection_steps": 0.8306623862918074,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 4.9,
+    "avg_solve_time_ms": 10.824340209364891,
+    "std_solve_time_ms": 1.8833365647499276,
+    "avg_pure_msign_time_ms": 1.9361890852451324,
+    "overhead_ratio": 5.590538802151376,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      8192,
+      1024
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 6.7,
+    "std_bisection_steps": 1.6155494421403511,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 8.7,
+    "avg_solve_time_ms": 18.92135478556156,
+    "std_solve_time_ms": 3.495368997944949,
+    "avg_pure_msign_time_ms": 1.9334163516759872,
+    "overhead_ratio": 9.786487410825679,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      8192
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.4,
+    "std_bisection_steps": 0.4898979485566356,
+    "avg_bracket_steps": 1.5,
+    "std_bracket_steps": 0.5,
+    "avg_total_msign_calls": 1.9,
+    "avg_solve_time_ms": 3.9887912571430206,
+    "std_solve_time_ms": 1.8981117626280757,
+    "avg_pure_msign_time_ms": 1.8400482833385468,
+    "overhead_ratio": 2.1677644512163767,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      8192
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.0,
+    "std_bisection_steps": 1.4142135623730951,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.3,
+    "avg_total_msign_calls": 4.9,
+    "avg_solve_time_ms": 10.016730427742004,
+    "std_solve_time_ms": 3.3267138604696376,
+    "avg_pure_msign_time_ms": 1.8406219780445099,
+    "overhead_ratio": 5.442035652743781,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      1024,
+      8192
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 5.8,
+    "std_bisection_steps": 2.3579652245103193,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.3,
+    "avg_total_msign_calls": 7.699999999999999,
+    "avg_solve_time_ms": 15.797284990549088,
+    "std_solve_time_ms": 5.348171774903559,
+    "avg_pure_msign_time_ms": 1.8701713532209396,
+    "overhead_ratio": 8.446971965077907,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      2048,
+      2048
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.6,
+    "std_bisection_steps": 0.48989794855663565,
+    "avg_bracket_steps": 1.7,
+    "std_bracket_steps": 0.45825756949558394,
+    "avg_total_msign_calls": 2.3,
+    "avg_solve_time_ms": 7.240394130349159,
+    "std_solve_time_ms": 2.807284920015645,
+    "avg_pure_msign_time_ms": 2.9523707926273346,
+    "overhead_ratio": 2.4523999994952814,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      2048,
+      2048
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.0,
+    "std_bisection_steps": 1.7320508075688772,
+    "avg_bracket_steps": 1.9,
+    "std_bracket_steps": 0.3,
+    "avg_total_msign_calls": 4.9,
+    "avg_solve_time_ms": 15.15442579984665,
+    "std_solve_time_ms": 5.913572202959767,
+    "avg_pure_msign_time_ms": 2.9588278383016586,
+    "overhead_ratio": 5.121766668433523,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      2048,
+      2048
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 7.9,
+    "std_bisection_steps": 2.844292530665578,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 9.9,
+    "avg_solve_time_ms": 30.84939606487751,
+    "std_solve_time_ms": 8.720425392982614,
+    "avg_pure_msign_time_ms": 2.9451116919517517,
+    "overhead_ratio": 10.474779665973667,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.01,
+    "avg_bisection_steps": 0.5,
+    "std_bisection_steps": 0.6708203932499369,
+    "avg_bracket_steps": 1.4,
+    "std_bracket_steps": 0.48989794855663565,
+    "avg_total_msign_calls": 1.9,
+    "avg_solve_time_ms": 26.89746655523777,
+    "std_solve_time_ms": 16.261450009978986,
+    "avg_pure_msign_time_ms": 14.201918616890907,
+    "overhead_ratio": 1.893931889121484,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.001,
+    "avg_bisection_steps": 3.3,
+    "std_bisection_steps": 1.8466185312619385,
+    "avg_bracket_steps": 1.8,
+    "std_bracket_steps": 0.4,
+    "avg_total_msign_calls": 5.1,
+    "avg_solve_time_ms": 72.32782728970051,
+    "std_solve_time_ms": 31.650826680337175,
+    "avg_pure_msign_time_ms": 14.179794862866402,
+    "overhead_ratio": 5.100766829787527,
+    "convergence_rate": 1.0
+  },
+  {
+    "shape": [
+      4096,
+      4096
+    ],
+    "msign_steps": 8,
+    "tolerance": 0.0001,
+    "avg_bisection_steps": 7.2,
+    "std_bisection_steps": 1.2489995996796797,
+    "avg_bracket_steps": 2.0,
+    "std_bracket_steps": 0.0,
+    "avg_total_msign_calls": 9.2,
+    "avg_solve_time_ms": 132.44592137634754,
+    "std_solve_time_ms": 17.78748071261654,
+    "avg_pure_msign_time_ms": 14.310754835605621,
+    "overhead_ratio": 9.254991990137222,
+    "convergence_rate": 1.0
+  }
+]

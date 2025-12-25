@@ -10,13 +10,16 @@ Date: 2025-12-25
 
 import re
 
+import matplotlib
 import matplotlib.ticker as ticker
 import numpy as np
 from matplotlib import colors as mcolors
 from matplotlib import rcParams
+from matplotlib.font_manager import FontProperties
 
 LIGHT_COLORS = [
     "#ea5762",
+    "#4ebb46",
     "#f89226",
     "#4aaca0",
     "#46626d",
@@ -32,12 +35,22 @@ DARK_COLORS = {
 
 def setup_plt_style():
     """Set plotting style"""
+    matplotlib.set_loglevel("error")
+
     # Use serif font (DejaVu Serif as primary)
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
+<<<<<<< Updated upstream
     rcParams["font.size"] = 14
     rcParams["axes.labelsize"] = 14
     rcParams["axes.titlesize"] = 16
+=======
+    rcParams["font.size"] = 16
+    rcParams["mathtext.fontset"] = "cm"
+
+    rcParams["axes.labelsize"] = 18
+    rcParams["axes.titlesize"] = 24
+>>>>>>> Stashed changes
     rcParams["xtick.labelsize"] = 12
     rcParams["ytick.labelsize"] = 12
     rcParams["legend.fontsize"] = 16
