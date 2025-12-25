@@ -156,16 +156,16 @@ def plot_single_optimizer(ax, df: pd.DataFrame, title: str, show_legend: bool = 
             xy=(min_lr, min_loss),
             xytext=(5, 10),
             textcoords='offset points',
-            fontsize=8,
+            fontsize=10,
             color=color,
             fontweight='bold'
         )
     
     # 设置细粒度的 x 轴刻度
     set_lr_xticks(ax)
-    ax.set_xlabel('LR', fontweight='bold')
-    ax.set_ylabel('Val Loss', fontweight='bold')
-    ax.set_title(title, fontweight='bold', pad=10)
+    # x轴标签在 plot_mup_comparison 中统一设置
+    ax.set_ylabel('Val Loss')
+    ax.set_title(title, pad=10)
     if show_legend:
         set_legend_style(ax, loc='upper right')
     ax.grid(True, linestyle='--', alpha=0.3, linewidth=0.8, zorder=1)
@@ -369,8 +369,8 @@ def plot_mup_comparison_broken():
 def plot_mup_comparison():
     """绘制 muon 和 spball 的 muP 对比图"""
     
-    # 创建图形
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    # 创建图形（稍矮一点）
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     
     # 加载数据（不在子图中显示图例）
     if MUON_CSV.exists():
@@ -400,28 +400,33 @@ def plot_mup_comparison():
         [0], [0],
         marker='*',
         color='gray',
-        markersize=18,
+        markersize=12,
         linestyle='None',
         markeredgecolor='white',
-        markeredgewidth=1.5,
+        markeredgewidth=1.0,
         label='Min Loss'
     )
     handles.append(star_handle)
     labels.append('Min Loss')
     
-    # 在图的底部添加统一的横向图例
+    # 在图的底部添加统一的横向图例（缩小字体和 marker，往上移）
     fig.legend(
         handles, labels,
         loc='lower center',
-        bbox_to_anchor=(0.5, -0.02),
+        bbox_to_anchor=(0.5, 0.02),
         ncol=len(labels),  # 横向排列成一行
         framealpha=0.95,
         edgecolor='black',
+        fontsize=10,
+        markerscale=0.8,
     )
+    
+    # 在两图下方中间添加共享的 x 轴标签（放在 x 轴线上）
+    fig.text(0.5, 0.18, 'LR', ha='center', va='bottom', fontsize=14)
     
     # 调整布局
     fig.set_constrained_layout(False)
-    plt.subplots_adjust(left=0.08, right=0.95, top=0.95, bottom=0.15)
+    plt.subplots_adjust(left=0.08, right=0.95, top=0.95, bottom=0.22)
     
     # 保存
     output_file = OUTPUT_DIR / "mup_comparison.pdf"
@@ -507,7 +512,18 @@ def plot_single_file(csv_path: Path, output_name: str = None):
     ax.set_title(f'μP Analysis - {optimizer_name} Optimizer', 
                  fontsize=14, fontweight='bold', pad=15)
     
-    set_legend_style(ax, loc='upper right')
+    # 设置图例（缩小字体）
+    legend = ax.legend(
+        loc='upper right',
+        frameon=True,
+        fancybox=False,
+        shadow=False,
+        framealpha=0.95,
+        edgecolor='black',
+        fontsize=10,
+        markerscale=0.8,
+    )
+    legend.get_frame().set_linewidth(1.0)
     ax.grid(True, linestyle='--', alpha=0.3, linewidth=0.8, zorder=1)
     ax.set_axisbelow(True)
     
