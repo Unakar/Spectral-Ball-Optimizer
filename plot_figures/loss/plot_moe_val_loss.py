@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from ..utils import (
+    DARK_COLORS,
     lighten_color,
     save_figure,
     set_axis_limits,
@@ -23,17 +24,15 @@ data_filtered = data[(data["Step"] >= 5000) & (data["Step"] <= 23000)]
 
 optimizer_styles = {
     "spectral sphere": {
-        "color": "#166534",
         "linestyle": "-",
         "label": "Spectral Sphere",
     },
-    "muon": {"color": "#1E3A8A", "linestyle": "-", "label": "Muon"},
+    "muon": {"linestyle": "-", "label": "Muon"},
     "muon sphere": {
-        "color": "#2E8B57",
         "linestyle": "--",
         "label": "Muon Sphere",
     },
-    "adamw": {"color": "#C41E3A", "linestyle": "-", "label": "AdamW"},
+    "adamw": {"linestyle": "-", "label": "AdamW"},
 }
 
 
@@ -58,7 +57,7 @@ for optimizer in optimizers:
         steps,
         q_low,
         q_high,
-        color=lighten_color(style["color"], amount=0.50),
+        color=lighten_color(DARK_COLORS[optimizer], amount=0.50),
         alpha=0.3,
         linewidth=0,
         zorder=0,
@@ -68,7 +67,7 @@ for optimizer in optimizers:
     ax.plot(
         steps,
         series,
-        color=style["color"],
+        color=DARK_COLORS[optimizer],
         linestyle=style["linestyle"],
         marker="o",
         label=style["label"],

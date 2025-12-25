@@ -15,6 +15,20 @@ import numpy as np
 from matplotlib import colors as mcolors
 from matplotlib import rcParams
 
+LIGHT_COLORS = [
+    "#ea5762",
+    "#f89226",
+    "#4aaca0",
+    "#46626d",
+]
+
+DARK_COLORS = {
+    "adamw": "#c41e3a",
+    "muon sphere": "#1ec4a8",
+    "spectral sphere": "#2e9d18",
+    "muon": "#1e3ac4",
+}
+
 
 def setup_plt_style():
     """Set plotting style"""
