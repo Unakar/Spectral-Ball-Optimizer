@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-绘图工具函数集合
-用于多个绘图文件共享的通用功能
+Collection of plotting utility functions
+Common functionality shared across multiple plotting files
 
-作者: Auto-generated
-日期: 2025-12-25
+Author: Auto-generated
+Date: 2025-12-25
 """
 
 import re
@@ -15,10 +15,24 @@ import numpy as np
 from matplotlib import colors as mcolors
 from matplotlib import rcParams
 
+LIGHT_COLORS = [
+    "#ea5762",
+    "#f89226",
+    "#4aaca0",
+    "#46626d",
+]
 
-def setup_publication_style():
-    """设置符合顶级期刊要求的绘图风格"""
-    # 使用 Times New Roman 字体（Nature 等期刊常用）
+DARK_COLORS = {
+    "adamw": "#c41e3a",
+    "muon sphere": "#1ec4a8",
+    "spectral sphere": "#2e9d18",
+    "muon": "#1e3ac4",
+}
+
+
+def setup_plt_style():
+    """Set plotting style"""
+    # Use serif font (DejaVu Serif as primary)
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
     rcParams["font.size"] = 16
@@ -29,39 +43,39 @@ def setup_publication_style():
     rcParams["legend.fontsize"] = 16
     rcParams["figure.titlesize"] = 24
 
-    # 设置线条和标记
+    # Set lines and markers
     rcParams["lines.linewidth"] = 2.5
     rcParams["lines.markersize"] = 4
 
-    # 设置坐标轴
+    # Set axes
     rcParams["axes.linewidth"] = 1.0
     rcParams["xtick.major.width"] = 1.0
     rcParams["ytick.major.width"] = 1.0
     rcParams["xtick.minor.width"] = 0.8
     rcParams["ytick.minor.width"] = 0.8
 
-    # 使用高质量输出
+    # Use high-quality output
     rcParams["figure.dpi"] = 300
     rcParams["savefig.dpi"] = 300
     rcParams["savefig.bbox"] = "tight"
     rcParams["savefig.pad_inches"] = 0.05
 
-    # 使用 PDF Type 42 字体（期刊要求）
+    # Use PDF Type 42 font
     rcParams["pdf.fonttype"] = 42
     rcParams["ps.fonttype"] = 42
 
 
 def lighten_color(color: str, amount: float = 0.35) -> tuple:
     """
-    将颜色向白色混合，让颜色"稍微亮一点"。
-    amount ∈ [0, 1]，越大越亮。
+    Mix color with white to make it "slightly lighter".
+    amount ∈ [0, 1], larger values make the color brighter.
 
-    参数:
-        color: 颜色字符串（如 "#006400"）
-        amount: 混合比例
+    Args:
+        color: Color string (e.g., "#006400")
+        amount: Mixing ratio
 
-    返回:
-        tuple: RGB颜色元组 (r, g, b)
+    Returns:
+        tuple: RGB color tuple (r, g, b)
     """
     r, g, b = mcolors.to_rgb(color)
     r = r + (1 - r) * amount
@@ -72,21 +86,21 @@ def lighten_color(color: str, amount: float = 0.35) -> tuple:
 
 def parse_training_log_file(log_file, min_step=2000, max_step=6500):
     """
-    解析训练日志文件，提取迭代步数和训练损失值
+    Parse training log file to extract iteration steps and training loss values
 
-    参数:
-        log_file: 日志文件路径
-        min_step: 最小步数
-        max_step: 最大步数
+    Args:
+        log_file: Path to log file
+        min_step: Minimum step number
+        max_step: Maximum step number
 
-    返回:
-        iterations: 迭代步数列表
-        losses: 损失值列表
+    Returns:
+        iterations: List of iteration steps
+        losses: List of loss values
     """
     iterations = []
     losses = []
 
-    # 正则表达式匹配训练日志行
+    # Regular expression to match training log lines
     pattern = r"iteration\s+(\d+)/.*lm loss:\s+([\d.E+-]+)"
 
     with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
@@ -94,7 +108,7 @@ def parse_training_log_file(log_file, min_step=2000, max_step=6500):
             match = re.search(pattern, line)
             if match:
                 iteration = int(match.group(1))
-                # 只保留指定范围内的数据
+                # Only keep data within specified range
                 if min_step <= iteration <= max_step:
                     loss = float(match.group(2))
                     iterations.append(iteration)
@@ -105,30 +119,30 @@ def parse_training_log_file(log_file, min_step=2000, max_step=6500):
 
 def save_figure(fig, output_file, formats=["pdf", "png", "eps"]):
     """
-    保存图形为多种格式
+    Save figure in multiple formats
 
-    参数:
-        fig: matplotlib图形对象
-        output_file: 输出文件路径（不含扩展名）
-        formats: 保存格式列表
+    Args:
+        fig: Matplotlib figure object
+        output_file: Output file path (without extension)
+        formats: List of formats to save
     """
     base_name = output_file.replace(".pdf", "")
 
     for fmt in formats:
         file_path = f"{base_name}.{fmt}"
         fig.savefig(file_path, format=fmt, dpi=300, bbox_inches="tight")
-        print(f"已保存 {fmt.upper()} 格式: {file_path}")
+        print(f"Saved {fmt.upper()} format: {file_path}")
 
 
 def set_axis_limits(ax, xlim=None, ylim=None, y_tick_interval=None):
     """
-    设置坐标轴范围和刻度
+    Set axis limits and ticks
 
-    参数:
-        ax: matplotlib坐标轴对象
-        xlim: x轴范围 (min, max)
-        ylim: y轴范围 (min, max)
-        y_tick_interval: y轴刻度间隔
+    Args:
+        ax: Matplotlib axis object
+        xlim: x-axis range (min, max)
+        ylim: y-axis range (min, max)
+        y_tick_interval: y-axis tick interval
     """
     if xlim:
         ax.set_xlim(*xlim)
@@ -139,3 +153,23 @@ def set_axis_limits(ax, xlim=None, ylim=None, y_tick_interval=None):
     if y_tick_interval:
         ax.yaxis.set_major_locator(ticker.MultipleLocator(y_tick_interval))
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+
+
+def set_legend_style(ax, loc="upper right"):
+    """
+    Set legend style for the given axis
+
+    Args:
+        ax: Matplotlib axis object
+        loc: Legend location
+    """
+    legend = ax.legend(
+        loc=loc,
+        frameon=True,
+        fancybox=False,
+        shadow=False,
+        framealpha=0.95,
+        edgecolor="black",
+    )
+    legend.get_frame().set_linewidth(1.0)
+    return legend
