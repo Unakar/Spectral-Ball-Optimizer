@@ -66,7 +66,7 @@ for optimizer in optimizers:
         q_low,
         q_high,
         color=lighten_color(DARK_COLORS[optimizer], amount=0.50),
-        alpha=0.3,
+        alpha=0.1,
         linewidth=0,
         zorder=0,
     )
