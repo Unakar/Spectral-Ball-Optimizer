@@ -14,22 +14,16 @@ import numpy as np
 import torch
 from scipy.optimize import brentq
 
-# Use a clean style suitable for papers
-# plt.style.use("seaborn-v0_8-whitegrid")
-plt.rcParams.update(
-    {
-        "mathtext.fontset": "cm",
-        "font.size": 16,
-        "axes.labelsize": 18,
-        "axes.titlesize": 24,
-        "legend.fontsize": 18,
-        "xtick.labelsize": 16,
-        "ytick.labelsize": 16,
-        "figure.dpi": 150,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-    }
+from ..utils import (
+    BRIGHT_COLORS,
+    POINT_COLOR,
+    save_figure,
+    set_legend_style,
+    setup_plt_style,
 )
+
+# Use unified plotting style
+setup_plt_style()
 
 # ============================================================================
 # Core functions copied from spectral_ball_utils.py
@@ -98,7 +92,7 @@ def compute_phi(
 def compute_f(
     G: torch.Tensor, Theta: torch.Tensor, lambda_value: float, msign_steps: int = 8
 ) -> float:
-    """f(λ) = <Θ, msign(G + λ·Θ)>."""
+    """f(λ) = <Θ, msign(G + λ·Θ)>"""
     Phi = compute_phi(G, Theta, lambda_value, msign_steps)
     f_value = float(inner_product(Theta, Phi).item())
     return f_value
@@ -271,7 +265,7 @@ def plot_f_lambda_multi_repeat(
     # Store zero point λ* for each repeat
     zero_points = np.zeros(n_repeats, dtype=np.float64)
 
-    plt.figure(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     for rep in range(n_repeats):
         # 使用不同 seed 进行多次独立试验
@@ -290,18 +284,11 @@ def plot_f_lambda_multi_repeat(
             zero_point = np.nan
         zero_points[rep] = zero_point
 
-        # 为不同 repeat 分配不同深浅的绿色系
-        colors = [
-            "#4CAF50",  # 亮绿色
-            "#8BC34A",  # 淡绿色
-            "#CDDC39",  # 黄绿色
-            "#81C784",  # 薄荷绿
-            "#A5D6A7",  # 浅薄荷绿
-        ]
-        color = colors[rep % len(colors)]
+        # 为不同 repeat 分配不同颜色
+        color = BRIGHT_COLORS[rep % len(BRIGHT_COLORS)]
 
         # 画出这一条 f(λ) 曲线（所有 repeat 画在同一张图上）
-        plt.plot(
+        ax.plot(
             lambdas,
             f_values,
             linewidth=2.5,
@@ -319,8 +306,10 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    plt.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$ over repeats")
-    plt.fill_between(
+    ax.plot(
+        lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$ over repeats"
+    )
+    ax.fill_between(
         lambdas,
         f_mean - f_std,
         f_mean + f_std,
@@ -334,45 +323,44 @@ def plot_f_lambda_multi_repeat(
         f_at_lambda_mean = np.interp(lambda_mean, lambdas, f_mean)
 
         # 改进标记方式：使用更美观的颜色和样式
-        plt.plot(
+        ax.plot(
             lambda_mean,
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#006eff",
-            markeredgecolor="#2980b9",
-            markeredgewidth=1,
+            color=POINT_COLOR,
             alpha=0.9,
             label="Averaged $\\lambda^\\ast$",
         )
 
-        plt.axhline(
+        ax.axhline(
             y=f_at_lambda_mean,
             linestyle="--",
-            color="#006eff",
+            color=POINT_COLOR,
             alpha=0.5,
             linewidth=1.2,
         )
-        plt.axvline(
+        ax.axvline(
             x=lambda_mean,
             linestyle="--",
-            color="#006eff",
+            color=POINT_COLOR,
             alpha=0.5,
             linewidth=1.2,
         )
 
-    plt.xlabel("$\\lambda$")
-    plt.ylabel("$h(\\lambda)$")
-    plt.title(title)
-    plt.grid(True, alpha=0.3)
-    plt.legend(fontsize=15, facecolor="white", edgecolor="gray", framealpha=0.9)
-    plt.tight_layout()
+    ax.set_xlabel("$\lambda$")
+    ax.set_ylabel("$h(\lambda)$")
+    # ax.set_title(title)
+    ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
+    ax.set_axisbelow(True)
+    # 设置图例和坐标轴范围
+    set_legend_style(ax, loc="upper left")
 
     # --------------------------
     # 添加放大的局部区域（右下角）
     # --------------------------
     # 创建子图：[left, bottom, width, height]
-    ax_inset = plt.axes([0.6, 0.2, 0.35, 0.35])
+    ax_inset = plt.axes([0.58, 0.2, 0.35, 0.35])
 
     # 放大区域的范围
     zoom_x_min, zoom_x_max = -0.01, 0.01
@@ -385,21 +373,14 @@ def plot_f_lambda_multi_repeat(
         ax_inset.plot(
             lambdas[mask],
             f_values[mask],
-            linewidth=1.5,
+            linewidth=2.5,
             alpha=0.7,
-            color=colors[rep % len(colors)],
+            color=BRIGHT_COLORS[rep % len(BRIGHT_COLORS)],
         )
 
     # 在放大区域绘制均值曲线和标准差
     mask = (lambdas >= zoom_x_min) & (lambdas <= zoom_x_max)
     ax_inset.plot(lambdas[mask], f_mean[mask], "k-", linewidth=1)
-    # ax_inset.fill_between(
-    #     lambdas[mask],
-    #     (f_mean - f_std)[mask],
-    #     (f_mean + f_std)[mask],
-    #     color="gray",
-    #     alpha=0.2,
-    # )
 
     # 如果lambda_mean在放大范围内，也在放大区域标记出来
     if not np.isnan(lambda_mean) and zoom_x_min <= lambda_mean <= zoom_x_max:
@@ -409,18 +390,24 @@ def plot_f_lambda_multi_repeat(
             f_at_lambda_mean,
             "o",
             markersize=5,
-            color="#006eff",
-            markeredgecolor="#2980b9",
-            markeredgewidth=1,
+            color=POINT_COLOR,
             alpha=0.9,
         )
 
     # 在放大区域绘制基准线
     ax_inset.axhline(
-        y=f_at_lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
+        y=f_at_lambda_mean,
+        linestyle="--",
+        color=POINT_COLOR,
+        alpha=0.5,
+        linewidth=1.2,
     )
     ax_inset.axvline(
-        x=lambda_mean, linestyle="--", color="#006eff", alpha=0.5, linewidth=1.2
+        x=lambda_mean,
+        linestyle="--",
+        color=POINT_COLOR,
+        alpha=0.5,
+        linewidth=1.2,
     )
     ax_inset.text(
         0.53,
@@ -428,23 +415,26 @@ def plot_f_lambda_multi_repeat(
         f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
         transform=ax_inset.transAxes,
         fontsize=10,
-        color="#006eff",
+        color=POINT_COLOR,
         alpha=0.8,
     )
 
     # 设置放大区域的标题和轴标签
     ax_inset.set_title(f"Zoom: [{zoom_x_min}, {zoom_x_max}]", fontsize=12)
-    ax_inset.grid(True, alpha=0.3)
+    ax_inset.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
+    ax_inset.set_axisbelow(True)
     # 手动设置横轴刻度，显示0和正负各两个刻度
     ax_inset.set_xticks([-0.01, -0.005, 0, 0.005, 0.01])
     ax_inset.tick_params(axis="x", labelsize=10)
     ax_inset.tick_params(axis="y", labelsize=10)
-
+    ax_inset.set_ylim()
     # 调整布局
-    plt.tight_layout()
+    # plt.tight_layout()
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
     if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        save_figure(plt.gcf(), save_path)
         print(f"Plot saved to {save_path}")
 
     # 控制外部是否 plt.show()，由 test_f_function 决定
@@ -522,7 +512,6 @@ def test_f_function(
             save_path = None
             if save_plots:
                 # Create results directory if it doesn't exist
-
                 save_path = os.path.join(
                     save_dir, f"h_lambda_{m}x{n}_mean{mean}_std{std}_n{n_repeats}.pdf"
                 )
@@ -610,16 +599,9 @@ def test_f_function(
             f"{shape_str:<15} "
             f"{r['mean']:>8.3f} "
             f"{r['std']:>8.3f} "
-            f"{r['lambda_mean']:>15.6e} "
-            f"{r['lambda_std']:>15.6e}"
+            f"{r['lambda_mean']:>15.10e} "
+            f"{r['lambda_std']:>15.10e}"
         )
-
-    print("\n" + "=" * 80)
-    all_near_zero = all(
-        np.all(np.abs(cfg_result["zero_points"]) < 0.01) for cfg_result in results
-    )
-    print(f"All zero points near 0 (|λ*| < 1e-2 for all repeats): {all_near_zero}")
-    print("=" * 80)
 
     if show_plots:
         plt.show()
@@ -630,7 +612,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    save_dir = "results"
+    save_dir = os.path.join(os.path.dirname(__file__), "results")
     os.makedirs(save_dir, exist_ok=True)
 
     test_f_function(

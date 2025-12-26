@@ -15,7 +15,10 @@ import matplotlib.ticker as ticker
 import numpy as np
 from matplotlib import colors as mcolors
 from matplotlib import rcParams
-from matplotlib.font_manager import FontProperties
+
+POINT_COLOR = "#0024da"
+
+BRIGHT_COLORS = ["#c6751e", "#df8322", "#f89226", "#f99d3c", "#f9a851"]
 
 LIGHT_COLORS = [
     "#ea5762",
