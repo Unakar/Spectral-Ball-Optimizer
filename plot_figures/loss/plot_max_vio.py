@@ -6,7 +6,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
 import pandas as pd
-
 from utils import (
     DARK_COLORS,
     lighten_color,
@@ -51,7 +50,7 @@ optimizer_styles = {
 
 
 # Plot three curves with volatility bands
-band_window = 4
+band_window = 2
 band_q_low = 0.01
 band_q_high = 0.99
 optimizers = ["adamw", "muon", "spectral sphere"]
@@ -72,7 +71,7 @@ for optimizer in optimizers:
         q_low,
         q_high,
         color=lighten_color(DARK_COLORS[optimizer], amount=0.50),
-        alpha=0.3,
+        alpha=0.1,
         linewidth=0,
         zorder=0,
     )

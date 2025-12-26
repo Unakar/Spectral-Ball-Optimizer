@@ -6,7 +6,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
 import pandas as pd
-
 from utils import (
     DARK_COLORS,
     lighten_color,
@@ -66,7 +65,7 @@ for optimizer in optimizers:
         q_low,
         q_high,
         color=lighten_color(DARK_COLORS[optimizer], amount=0.50),
-        alpha=0.3,
+        alpha=0.1,
         linewidth=0,
         zorder=0,
     )
@@ -95,6 +94,9 @@ ax.set_ylabel("Val Loss", fontweight="bold")
 # Set axis limits
 set_axis_limits(ax, xlim=(6000, 24000), ylim=(2.4, 2.8))
 
+# Set custom x-axis ticks to hide 24000
+ax.set_xticks([6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000])
+ax.set_yticks([2.40, 2.45, 2.50, 2.55, 2.60, 2.65, 2.70, 2.75])
 # Add grid
 ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
