@@ -10,13 +10,19 @@ Date: 2025-12-25
 
 import re
 
+import matplotlib
 import matplotlib.ticker as ticker
 import numpy as np
 from matplotlib import colors as mcolors
 from matplotlib import rcParams
 
+POINT_COLOR = "#0024da"
+
+BRIGHT_COLORS = ["#c6751e", "#df8322", "#f89226", "#f99d3c", "#f9a851"]
+
 LIGHT_COLORS = [
     "#ea5762",
+    "#4ebb46",
     "#f89226",
     "#4aaca0",
     "#46626d",
@@ -32,12 +38,16 @@ DARK_COLORS = {
 
 def setup_plt_style():
     """Set plotting style"""
+    matplotlib.set_loglevel("error")
+
     # Use serif font (DejaVu Serif as primary)
     rcParams["font.family"] = "serif"
     rcParams["font.serif"] = ["DejaVu Serif"]
-    rcParams["font.size"] = 14
-    rcParams["axes.labelsize"] = 14
-    rcParams["axes.titlesize"] = 16
+    rcParams["font.size"] = 16
+    rcParams["mathtext.fontset"] = "cm"
+
+    rcParams["axes.labelsize"] = 18
+    rcParams["axes.titlesize"] = 24
     rcParams["xtick.labelsize"] = 12
     rcParams["ytick.labelsize"] = 12
     rcParams["legend.fontsize"] = 16
@@ -117,7 +127,7 @@ def parse_training_log_file(log_file, min_step=2000, max_step=6500):
     return np.array(iterations), np.array(losses)
 
 
-def save_figure(fig, output_file, formats=["pdf", "png", "eps"]):
+def save_figure(fig, output_file, formats=["pdf", "png", "eps"], bbox_inches="tight"):
     """
     Save figure in multiple formats
 
@@ -130,7 +140,7 @@ def save_figure(fig, output_file, formats=["pdf", "png", "eps"]):
 
     for fmt in formats:
         file_path = f"{base_name}.{fmt}"
-        fig.savefig(file_path, format=fmt, dpi=300, bbox_inches="tight")
+        fig.savefig(file_path, format=fmt, dpi=300, bbox_inches=bbox_inches)
         print(f"Saved {fmt.upper()} format: {file_path}")
 
 

@@ -15,24 +15,16 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Use a clean style suitable for papers
-# plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams.update(
-    {
-        "mathtext.fontset": "cm",
-        "font.family": "serif",
-        "font.serif": ["Times New Roman"],
-        "font.size": 16,
-        "axes.labelsize": 18,
-        "axes.titlesize": 24,
-        "legend.fontsize": 18,
-        "xtick.labelsize": 18,
-        "ytick.labelsize": 18,
-        "figure.dpi": 150,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-    }
+from ..utils import (
+    LIGHT_COLORS,
+    save_figure,
+    set_axis_limits,
+    set_legend_style,
+    setup_plt_style,
 )
+
+# Use unified plotting style
+setup_plt_style()
 
 
 def load_results(json_path: str) -> list:
@@ -80,21 +72,20 @@ def plot_overhead_vs_tolerance(results: list, output_dir: Path):
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    colors = ["#2ecc71", "#3498db", "#e74c3c"]  # green, blue, red
     bars = ax.bar(
         range(len(tolerances)),
         overheads,
         yerr=overhead_stds,
         capsize=5,
-        color=colors,
+        color=LIGHT_COLORS[: len(tolerances)],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
 
-    ax.set_xlabel("Tolerance ($\\tau$)")
-    ax.set_ylabel("Overhead Ratio ($\\times$)")
-    ax.set_title("$\\lambda$ Solver Overhead versus Tolerance")
+    ax.set_xlabel("Tolerance ($\\tau$)", fontweight="bold")
+    ax.set_ylabel("Overhead Ratio ($\\times$)", fontweight="bold")
+    # ax.set_title("$\\lambda$ Solver Overhead versus Tolerance")
     ax.set_xticks(range(len(tolerances)))
     ax.set_xticklabels(tol_labels)
 
@@ -107,19 +98,17 @@ def plot_overhead_vs_tolerance(results: list, output_dir: Path):
             textcoords="offset points",
             ha="center",
             va="bottom",
-            # fontsize=12,
-            # fontweight="bold",
         )
 
-    ax.set_ylim(0, max(overheads) * 1.25)
+    set_axis_limits(ax, ylim=(0, max(overheads) * 1.25))
     ax.axhline(y=1.2, color="grey", linestyle="--", label="No overhead (Muon)")
-    ax.legend(loc="upper right", facecolor="white", edgecolor="gray", framealpha=0.9)
+    set_legend_style(ax, loc="upper right")
 
-    plt.tight_layout()
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
     output_path = output_dir / "overhead_vs_tolerance.pdf"
-    plt.savefig(output_path)
-    plt.savefig(output_dir / "overhead_vs_tolerance.png")
-    print(f"Saved: {output_path}")
+    save_figure(fig, str(output_path))
     plt.close()
 
 
@@ -141,34 +130,33 @@ def plot_msign_calls_breakdown(results: list, output_dir: Path):
     x = np.arange(len(tolerances))
     width = 0.6
 
-    bars1 = ax.bar(
+    ax.bar(
         x,
         bracket_steps,
         width,
         label="Bracket",
-        color="#3498db",
+        color=LIGHT_COLORS[3],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
-    bars2 = ax.bar(
+    ax.bar(
         x,
         bisect_steps,
         width,
         bottom=bracket_steps,
         label="Bisection",
-        color="#e74c3c",
+        color=LIGHT_COLORS[0],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
 
-    ax.set_xlabel("Tolerance ($\\tau$)")
-    ax.set_ylabel("Number of $\\operatorname{msign}$ Calls")
-    ax.set_title("$\\operatorname{msign}$ Calls Breakdown: Bracket versus Bisection")
+    ax.set_xlabel("Tolerance ($\\tau$)", fontweight="bold")
+    ax.set_ylabel("Number of $\\operatorname{msign}$ Calls", fontweight="bold")
+    # ax.set_title("$\operatorname{msign}$ Calls Breakdown: Bracket versus Bisection")
     ax.set_xticks(x)
     ax.set_xticklabels(tol_labels)
-    ax.legend(loc="upper right", facecolor="white", edgecolor="gray", framealpha=0.9)
 
     # Add total labels
     for i, (b, bs) in enumerate(zip(bracket_steps, bisect_steps)):
@@ -180,17 +168,18 @@ def plot_msign_calls_breakdown(results: list, output_dir: Path):
             textcoords="offset points",
             ha="center",
             va="bottom",
-            # fontsize=10,
-            # fontweight="bold",
         )
 
-    ax.set_ylim(0, max([b + bs for b, bs in zip(bracket_steps, bisect_steps)]) * 1.2)
+    set_axis_limits(
+        ax, ylim=(0, max([b + bs for b, bs in zip(bracket_steps, bisect_steps)]) * 1.2)
+    )
+    set_legend_style(ax, loc="upper right")
 
-    plt.tight_layout()
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
     output_path = output_dir / "msign_calls_breakdown.pdf"
-    plt.savefig(output_path)
-    plt.savefig(output_dir / "msign_calls_breakdown.png")
-    print(f"Saved: {output_path}")
+    save_figure(fig, str(output_path))
     plt.close()
 
 
@@ -207,10 +196,10 @@ def plot_overhead_by_shape(results: list, output_dir: Path):
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    colors = {"0.01": "#2ecc71", "0.001": "#3498db", "0.0001": "#e74c3c"}
-    markers = {"0.01": "o", "0.001": "s", "0.0001": "^"}
+    tol_colors = list(LIGHT_COLORS[: len(by_tol)])
+    tol_markers = ["o", "s", "^"]
 
-    for tol in sorted(by_tol.keys()):
+    for i, tol in enumerate(sorted(by_tol.keys())):
         items = by_tol[tol]
         # Sort by total elements
         items_sorted = sorted(items, key=lambda x: x["shape"][0] * x["shape"][1])
@@ -218,40 +207,31 @@ def plot_overhead_by_shape(results: list, output_dir: Path):
         shapes = [f"{r['shape'][0]}×{r['shape'][1]}" for r in items_sorted]
         overheads = [r["overhead_ratio"] for r in items_sorted]
 
-        tol_str = str(tol)
         ax.plot(
             range(len(shapes)),
             overheads,
-            marker=markers[tol_str],
+            marker=tol_markers[i],
             markersize=7,
-            linewidth=2,
             label=f"$\\tau = 10^{{{int(np.log10(tol))}}}$",
-            color=colors[tol_str],
+            color=tol_colors[i],
             alpha=0.85,
         )
 
-    ax.set_ylim(0, 13)
-    ax.set_xlabel("Matrix Shape")
-    ax.set_ylabel("Overhead Ratio ($\\times$)")
-    ax.set_title("$\\lambda$ Solver Overhead Across Different Matrix Shapes")
+    ax.set_xlabel("Matrix Shape", fontweight="bold")
+    ax.set_ylabel("Overhead Ratio ($\\times$)", fontweight="bold")
+    # ax.set_title("$\lambda$ Solver Overhead Across Different Matrix Shapes")
     ax.set_xticks(range(len(shapes)))
     ax.set_xticklabels(shapes, rotation=45, ha="right")
-    ax.legend(
-        loc="upper center",
-        facecolor="white",
-        edgecolor="gray",
-        framealpha=0.8,
-        bbox_to_anchor=(0.5, 0.98),
-        ncol=3,
-        borderaxespad=0,
-    )
-    ax.set_ylim(0, None)
 
-    plt.tight_layout()
+    # Set axis limits and legend
+    set_axis_limits(ax, ylim=(0, 13))
+    set_legend_style(ax, loc="upper right")
+
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
     output_path = output_dir / "overhead_by_shape.pdf"
-    plt.savefig(output_path, bbox_inches="tight")
-    plt.savefig(output_dir / "overhead_by_shape.png")
-    print(f"Saved: {output_path}")
+    save_figure(fig, str(output_path))
     plt.close()
 
 
@@ -275,39 +255,39 @@ def plot_time_absolute(results: list, output_dir: Path):
     x = np.arange(len(shapes))
     width = 0.35
 
-    bars1 = ax.bar(
+    ax.bar(
         x - width / 2,
         msign_times,
         width,
         label="Pure $\\operatorname{msign}$",
-        color="#3498db",
+        color=LIGHT_COLORS[3],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
-    bars2 = ax.bar(
+    ax.bar(
         x + width / 2,
         solve_times,
         width,
         label="$\\lambda$ Solver",
-        color="#e74c3c",
+        color=LIGHT_COLORS[0],
         edgecolor="black",
         linewidth=1.2,
         alpha=0.85,
     )
 
-    ax.set_xlabel("Matrix Shape")
-    ax.set_ylabel("Time (ms)")
-    ax.set_title(f"Absolute Runtime Comparison ($\\tau = 10^{{-3}}$)")
+    ax.set_xlabel("Matrix Shape", fontweight="bold")
+    ax.set_ylabel("Time (ms)", fontweight="bold")
+    # ax.set_title(f"Absolute Runtime Comparison ($\tau = 10^{{-3}}$)")
     ax.set_xticks(x)
     ax.set_xticklabels(shapes, rotation=45, ha="right")
-    ax.legend(loc="upper left", facecolor="white", edgecolor="gray", framealpha=0.9)
+    set_legend_style(ax, loc="upper left")
 
-    plt.tight_layout()
+    fig.set_constrained_layout(False)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
     output_path = output_dir / "time_absolute.pdf"
-    plt.savefig(output_path)
-    plt.savefig(output_dir / "time_absolute.png")
-    print(f"Saved: {output_path}")
+    save_figure(fig, str(output_path))
     plt.close()
 
 

@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\caption{Lambda Solver Overhead (tol=$1e-04$)}
+\label{tab:lambda_solver_overhead}
+\begin{tabular}{lrrrrr}
+\toprule
+Shape & msign & Bracket & Bisect & Total msign & Overhead \\
+\midrule
+$1024\times4096$ & 8 & 2.0 & 5.9 & 7.9 & 8.1$\times$ \\
+$4096\times1024$ & 8 & 2.0 & 7.1 & 9.1 & 9.4$\times$ \\
+$1024\times1024$ & 8 & 2.3 & 7.0 & 9.3 & 10.9$\times$ \\
+$6144\times1024$ & 8 & 2.0 & 6.9 & 8.9 & 10.5$\times$ \\
+$1024\times6144$ & 8 & 2.0 & 7.2 & 9.2 & 10.2$\times$ \\
+$8192\times1024$ & 8 & 2.0 & 6.7 & 8.7 & 9.8$\times$ \\
+$1024\times8192$ & 8 & 1.9 & 5.8 & 7.7 & 8.4$\times$ \\
+$2048\times2048$ & 8 & 2.0 & 7.9 & 9.9 & 10.5$\times$ \\
+$4096\times4096$ & 8 & 2.0 & 7.2 & 9.2 & 9.3$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
