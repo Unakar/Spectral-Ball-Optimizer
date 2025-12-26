@@ -28,7 +28,7 @@ data = pd.read_csv(os.path.join(raw_data_dir, "mup", "standard_baseline.csv"))
 fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
 # Filter data: keep only steps 8500-23000
-data_filtered = data[(data["Step"] >= 8500) & (data["Step"] <= 23000)]
+data_filtered = data[(data["Step"] >= 7000) & (data["Step"] <= 23000)]
 
 optimizer_styles = {
     "spectral sphere": {
@@ -164,11 +164,11 @@ if spectral_intersect_step:
     )
 
     # Add faster annotation
-    mid_x = (adamw_final_step + spectral_intersect_step) / 2
+    mid_x = (muon_intersect_step + spectral_intersect_step) / 2
     ax.annotate(
         f"{speedup_ss:.2f}× faster",
         xy=(mid_x, arrow_y),
-        xytext=(mid_x - 3000, arrow_y - 0.02),
+        xytext=(mid_x, arrow_y - 0.02),
         fontsize=11,
         fontweight="bold",
         color=DARK_COLORS["spectral sphere"],
@@ -178,7 +178,7 @@ if spectral_intersect_step:
             boxstyle="round,pad=0.3",
             facecolor="white",
             edgecolor=DARK_COLORS["spectral sphere"],
-            alpha=0.95,
+            alpha=0.9,
         ),
     )
 
@@ -195,7 +195,7 @@ if muon_intersect_step:
     ax.annotate(
         "",
         xy=(muon_intersect_step, arrow_y),
-        xytext=(adamw_final_step - 100, arrow_y),
+        xytext=(adamw_final_step, arrow_y),
         arrowprops=dict(
             arrowstyle="->",
             color=DARK_COLORS["muon"],
@@ -223,7 +223,7 @@ if muon_intersect_step:
     ax.annotate(
         f"{speedup_muon:.2f}× faster",
         xy=(mid_x, arrow_y),
-        xytext=(mid_x - 500, arrow_y + 0.02),
+        xytext=(mid_x, arrow_y + 0.02),
         fontsize=11,
         fontweight="bold",
         color=DARK_COLORS["muon"],
@@ -233,7 +233,7 @@ if muon_intersect_step:
             boxstyle="round,pad=0.3",
             facecolor="white",
             edgecolor=DARK_COLORS["muon"],
-            alpha=0.95,
+            alpha=0.8,
         ),
     )
 
@@ -245,6 +245,7 @@ ax.set_ylabel("Val Loss", fontweight="bold")
 
 # Set axis limits
 set_axis_limits(ax, xlim=(8000, 24000))
+ax.set_xticks([8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000])
 
 # Add grid
 ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
