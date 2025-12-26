@@ -223,7 +223,7 @@ if muon_intersect_step:
     ax.annotate(
         f"{speedup_muon:.2f}× faster",
         xy=(mid_x, arrow_y),
-        xytext=(mid_x, arrow_y + 0.02),
+        xytext=(mid_x, arrow_y + 0.018),
         fontsize=11,
         fontweight="bold",
         color=DARK_COLORS["muon"],
