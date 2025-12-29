@@ -36,28 +36,19 @@ data_filtered = data[(data["Step"] >= 5000) & (data["Step"] <= 13500)].copy()
 # all split是baseline，用较粗的线和较低透明度
 ablation_styles = {
     "all split": {
-        "color": "#FF8FA8",  # 粉色
-        "linestyle": "-",
-        "linewidth": 5.0,    # 更粗作为baseline
-        "alpha": 0.5,        # 半透明
-        "label": "All Split (Baseline)",
-        "zorder": 3,         # 顶层
+        "color": "#F59E0B",  # 琥珀金 (Amber-500)
+        "linestyle": "-", "linewidth": 7, "alpha": 0.5, # 稍微透明一点，以免太刺眼
+        "label": "All Split (Standard)", "zorder": 1,
     },
     "split ffn only": {
-        "color": "#8b5cf6",  # 紫色
-        "linestyle": "-",
-        "linewidth": 2.5,
-        "alpha": 0.95,
-        "label": "Split FFN Only",
-        "zorder": 1,         # 底层
+        "color": "#86198f",  # 绛紫/洋红深色 (Fuchsia-800)
+        "linestyle": "-", "linewidth": 3, "alpha": 0.9,
+        "label": "Split FFN Only", "zorder": 2,
     },
     "split qkv only": {
-        "color": "#0891b2",  # 青色
-        "linestyle": "-",
-        "linewidth": 2.5,
-        "alpha": 0.95,
-        "label": "Split QKV Only",
-        "zorder": 2,         # 中层
+        "color": "#0891b2",  # 你的原色：青色 (Cyan-600)
+        "linestyle": "-", "linewidth": 3, "alpha": 1.0,
+        "label": "Split QKV Only", "zorder": 3,
     },
 }
 
