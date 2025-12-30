@@ -5,12 +5,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 from utils import (
-    LIGHT_COLORS,
-    lighten_color,
+    ABLATION_COLORS,
     save_figure,
     set_axis_limits,
     set_legend_style,
@@ -36,19 +34,28 @@ data_filtered = data[(data["Step"] >= 5000) & (data["Step"] <= 13500)].copy()
 # all split是baseline，用较粗的线和较低透明度
 ablation_styles = {
     "all split": {
-        "color": "#F59E0B",  # 琥珀金 (Amber-500)
-        "linestyle": "-", "linewidth": 7, "alpha": 0.5, # 稍微透明一点，以免太刺眼
-        "label": "All Split (Standard)", "zorder": 1,
-    },
-    "split ffn only": {
-        "color": "#86198f",  # 绛紫/洋红深色 (Fuchsia-800)
-        "linestyle": "-", "linewidth": 3, "alpha": 0.9,
-        "label": "Split FFN Only", "zorder": 2,
+        "color": ABLATION_COLORS[0],
+        "linestyle": "-",
+        "linewidth": 7,
+        "alpha": 0.66,
+        "label": "All Split (Standard)",
+        "zorder": 1,
     },
     "split qkv only": {
-        "color": "#0891b2",  # 你的原色：青色 (Cyan-600)
-        "linestyle": "-", "linewidth": 3, "alpha": 1.0,
-        "label": "Split QKV Only", "zorder": 3,
+        "color": ABLATION_COLORS[1],
+        "linestyle": "-",
+        "linewidth": 2,
+        "alpha": 1.0,
+        "label": "Split QKV Only",
+        "zorder": 2,
+    },
+    "split ffn only": {
+        "color": ABLATION_COLORS[2],
+        "linestyle": "-",
+        "linewidth": 2,
+        "alpha": 1.0,
+        "label": "Split FFN Only",
+        "zorder": 3,
     },
 }
 
@@ -69,9 +76,12 @@ for config in configs:
     valid_series = series[valid_mask].values
 
     # 对数据进行smoothing（滚动平均）
-    smoothed_series = pd.Series(valid_series).rolling(
-        window=smooth_window, center=True, min_periods=1
-    ).mean().values
+    smoothed_series = (
+        pd.Series(valid_series)
+        .rolling(window=smooth_window, center=True, min_periods=1)
+        .mean()
+        .values
+    )
 
     # 主曲线
     ax.plot(

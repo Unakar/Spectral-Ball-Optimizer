@@ -5,12 +5,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 from utils import (
-    LIGHT_COLORS,
-    lighten_color,
+    ABLATION_COLORS,
     save_figure,
     set_axis_limits,
     set_legend_style,
@@ -36,25 +34,25 @@ data_filtered = data[(data["Step"] >= 5000) & (data["Step"] <= 13500)].copy()
 # Spectral MuP 作为baseline（标准方法）
 ablation_styles = {
     "Spectral MuP": {
-        "color": "#F59E0B",  # 琥珀金 (Amber-500)
+        "color": ABLATION_COLORS[0],
         "linestyle": "-",
         "linewidth": 7,
-        "alpha": 0.5,
-        "label": "Spectral MuP (Standard)",
+        "alpha": 0.66,
+        "label": "Spectral $\\mu$P (Standard)",
         "zorder": 1,
     },
     "Spectral Kaiming": {
-        "color": "#86198f",  # 绛紫/洋红深色 (Fuchsia-800)
+        "color": ABLATION_COLORS[1],
         "linestyle": "-",
-        "linewidth": 3,
-        "alpha": 0.9,
+        "linewidth": 2,
+        "alpha": 1.0,
         "label": "Spectral Kaiming",
         "zorder": 2,
     },
     "Align Adam RMS": {
-        "color": "#0891b2",  # 青色 (Cyan-600)
+        "color": ABLATION_COLORS[2],
         "linestyle": "-",
-        "linewidth": 3,
+        "linewidth": 2,
         "alpha": 1.0,
         "label": "Align Adam RMS",
         "zorder": 3,
@@ -78,9 +76,12 @@ for config in configs:
     valid_series = series[valid_mask].values
 
     # 对数据进行smoothing（滚动平均）
-    smoothed_series = pd.Series(valid_series).rolling(
-        window=smooth_window, center=True, min_periods=1
-    ).mean().values
+    smoothed_series = (
+        pd.Series(valid_series)
+        .rolling(window=smooth_window, center=True, min_periods=1)
+        .mean()
+        .values
+    )
 
     # 主曲线
     ax.plot(
@@ -114,4 +115,3 @@ plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
 
 output_file = os.path.join(output_dir, "lrscaler_ablation_loss.pdf")
 save_figure(fig, output_file, formats=["pdf", "png", "eps"])
-
