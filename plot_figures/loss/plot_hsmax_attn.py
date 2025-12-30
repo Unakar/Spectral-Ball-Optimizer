@@ -74,6 +74,7 @@ for optimizer in optimizers:
         values,
         color=lighten_color(DARK_COLORS[optimizer], amount=0.50),
         linestyle=style["linestyle"],
+        linewidth=1,
         alpha=0.5,
         zorder=0,
     )
@@ -95,11 +96,11 @@ for optimizer in optimizers:
 
 # 设置坐标轴
 ax.set_xlabel("Training Steps", fontweight="bold")
-ax.set_ylabel("Attention Hidden State AbsMax (Outliers)", fontweight="bold")
+ax.set_ylabel("Attn Hidden State $\\mathtt{AbsMax}$ (Outliers)", fontweight="bold")
 
 # 设置 y 轴为 log scale
 ax.set_yscale("log")
-set_axis_limits(ax, xlim=(None, None), ylim=(0, 6e3))
+set_axis_limits(ax, xlim=(None, None), ylim=(None, 6e3))
 ax.set_xticks([0, 5000, 10000, 15000, 20000])
 
 # 添加网格
