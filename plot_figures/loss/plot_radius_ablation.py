@@ -6,12 +6,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
-
 from utils import (
-    LIGHT_COLORS,
-    lighten_color,
+    ABLATION_COLORS,
     save_figure,
     set_axis_limits,
     set_legend_style,
@@ -36,36 +33,36 @@ data_filtered = data[(data["Step"] >= 1000) & (data["Step"] <= 23500)].copy()
 # 定义四种radius配置的样式 - 红黄蓝绿
 ablation_styles = {
     "radius 0.1": {
-        "color": "#2563eb",  # 蓝色
+        "color": ABLATION_COLORS[2],
         "linestyle": "-",
-        "linewidth": 1.8,
-        "alpha": 0.95,
+        "linewidth": 1.0,
+        "alpha": 1.0,
         "label": "Radius 0.1",
         "zorder": 1,
     },
     "radius 0.5": {
-        "color": "#0891b2",  # 青色
+        "color": ABLATION_COLORS[1],
         "linestyle": "-",
-        "linewidth": 1.4,
+        "linewidth": 1.0,
         "alpha": 1.0,
         "label": "Radius 0.5",
         "zorder": 2,
     },
     "radius 1": {
-        "color": "#dc2626",  # 红色
+        "color": ABLATION_COLORS[3],
         "linestyle": "-",
-        "linewidth": 1.8,
-        "alpha": 0.95,
+        "linewidth": 1.0,
+        "alpha": 1.0,
         "label": "Radius 1",
         "zorder": 3,
     },
     "radius 2": {
-        "color": "#F59E0B",  # 琥珀金
+        "color": ABLATION_COLORS[0],
         "linestyle": "-",
-        "linewidth": 4,
-        "alpha": 0.6,
+        "linewidth": 3.0,
+        "alpha": 0.8,
         "label": "Radius 2",
-        "zorder": 4,
+        "zorder": 1,
     },
 }
 
@@ -89,9 +86,12 @@ for config in configs:
     valid_series = series[valid_mask].values
 
     # 对数据进行smoothing（滚动平均）
-    smoothed_series = pd.Series(valid_series).rolling(
-        window=smooth_window, center=True, min_periods=1
-    ).mean().values
+    smoothed_series = (
+        pd.Series(valid_series)
+        .rolling(window=smooth_window, center=True, min_periods=1)
+        .mean()
+        .values
+    )
 
     # 存储数据
     smoothed_data[config] = (valid_steps, smoothed_series)
@@ -109,14 +109,20 @@ for config in configs:
     )
 
 # 创建放大图 (inset) - 往右下移动
-axins = inset_axes(ax, width="40%", height="40%", loc="upper left",
-                   bbox_to_anchor=(0.3, 0, 1, 0.75), bbox_transform=ax.transAxes)
+axins = inset_axes(
+    ax,
+    width="40%",
+    height="40%",
+    loc="upper left",
+    bbox_to_anchor=(0.5, -0.1, 1, 0.75),
+    bbox_transform=ax.transAxes,
+)
 
 # 在放大图中绘制曲线
 for config in configs:
     style = ablation_styles[config]
     valid_steps, smoothed_series = smoothed_data[config]
-    
+
     # 只绘制15000-22500范围内的数据
     mask = (valid_steps >= 15000) & (valid_steps <= 20000)
     axins.plot(
@@ -141,7 +147,9 @@ axins.set_yticklabels([])
 axins.tick_params(length=0)  # 隐藏刻度线
 
 # 标记放大区域
-mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.5", linestyle="--", linewidth=0.8)
+mark_inset(
+    ax, axins, loc1=3, loc2=4, fc="none", ec="0.5", linestyle="--", linewidth=0.5, zorder=0
+)
 
 # 设置坐标轴标签
 ax.set_xlabel("Training Steps", fontweight="bold")

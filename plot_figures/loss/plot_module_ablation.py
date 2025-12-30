@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from utils import (
     ABLATION_COLORS,
