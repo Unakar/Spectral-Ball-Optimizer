@@ -37,24 +37,24 @@ ablation_styles = {
         "color": ABLATION_COLORS[0],
         "linestyle": "-",
         "linewidth": 7,
-        "alpha": 0.8,
+        "alpha": 0.66,
         "label": "All Split (Standard)",
         "zorder": 1,
     },
-    "split ffn only": {
+    "split qkv only": {
         "color": ABLATION_COLORS[1],
         "linestyle": "-",
         "linewidth": 2,
         "alpha": 1.0,
-        "label": "Split FFN Only",
+        "label": "Split QKV Only",
         "zorder": 2,
     },
-    "split qkv only": {
+    "split ffn only": {
         "color": ABLATION_COLORS[2],
         "linestyle": "-",
         "linewidth": 2,
         "alpha": 1.0,
-        "label": "Split QKV Only",
+        "label": "Split FFN Only",
         "zorder": 3,
     },
 }

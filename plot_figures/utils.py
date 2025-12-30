@@ -29,8 +29,8 @@ LIGHT_COLORS = [
 ]
 
 ABLATION_COLORS = [
-    "#f6a823",
-    "#4b08b2",
+    "#f59e0b",
+    "#86198f",
     "#0891b2",
 ]
 
