@@ -28,6 +28,12 @@ LIGHT_COLORS = [
     "#46626d",
 ]
 
+ABLATION_COLORS = [
+    "#F59E0B",
+    "#86198f",
+    "#0891b2",
+]
+
 DARK_COLORS = {
     "adamw": "#c41e3a",
     "muon sphere": "#1ec4a8",
