@@ -1,0 +1,117 @@
+import os
+import sys
+
+# 支持直接运行脚本
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+from utils import (
+    LIGHT_COLORS,
+    lighten_color,
+    save_figure,
+    set_axis_limits,
+    set_legend_style,
+    setup_plt_style,
+)
+
+setup_plt_style()
+
+# 数据目录和输出目录
+raw_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "raw_data")
+output_dir = os.path.join(os.path.dirname(__file__), "results", "ablation")
+os.makedirs(output_dir, exist_ok=True)
+
+# 读取lrscaler消融实验数据
+data = pd.read_csv(os.path.join(raw_data_dir, "details", "lrscaler.csv"))
+
+fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
+
+# 过滤数据：只保留step在5000到13500之间
+data_filtered = data[(data["Step"] >= 5000) & (data["Step"] <= 13500)].copy()
+
+# 定义三种配置的样式
+# Spectral MuP 作为baseline（标准方法）
+ablation_styles = {
+    "Spectral MuP": {
+        "color": "#F59E0B",  # 琥珀金 (Amber-500)
+        "linestyle": "-",
+        "linewidth": 7,
+        "alpha": 0.5,
+        "label": "Spectral MuP (Standard)",
+        "zorder": 1,
+    },
+    "Spectral Kaiming": {
+        "color": "#86198f",  # 绛紫/洋红深色 (Fuchsia-800)
+        "linestyle": "-",
+        "linewidth": 3,
+        "alpha": 0.9,
+        "label": "Spectral Kaiming",
+        "zorder": 2,
+    },
+    "Align Adam RMS": {
+        "color": "#0891b2",  # 青色 (Cyan-600)
+        "linestyle": "-",
+        "linewidth": 3,
+        "alpha": 1.0,
+        "label": "Align Adam RMS",
+        "zorder": 3,
+    },
+}
+
+# Smoothing参数
+smooth_window = 50  # 滚动平均窗口大小
+
+# 绘制顺序：baseline在底层
+configs = ["Spectral MuP", "Spectral Kaiming", "Align Adam RMS"]
+
+for config in configs:
+    style = ablation_styles[config]
+    steps = data_filtered["Step"]
+    series = data_filtered[config]
+
+    # 跳过NaN值，创建有效数据的副本
+    valid_mask = ~series.isna()
+    valid_steps = steps[valid_mask].values
+    valid_series = series[valid_mask].values
+
+    # 对数据进行smoothing（滚动平均）
+    smoothed_series = pd.Series(valid_series).rolling(
+        window=smooth_window, center=True, min_periods=1
+    ).mean().values
+
+    # 主曲线
+    ax.plot(
+        valid_steps,
+        smoothed_series,
+        color=style["color"],
+        linestyle=style["linestyle"],
+        linewidth=style["linewidth"],
+        label=style["label"],
+        alpha=style["alpha"],
+        zorder=style["zorder"],
+    )
+
+# 设置坐标轴标签
+ax.set_xlabel("Training Steps", fontweight="bold")
+ax.set_ylabel("Train Loss", fontweight="bold")
+
+# 设置坐标轴范围
+set_axis_limits(ax, xlim=(5000, 13500))
+
+# 添加网格
+ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=0)
+ax.set_axisbelow(True)
+
+# 设置图例
+set_legend_style(ax, loc="upper right")
+
+# 调整布局
+fig.set_constrained_layout(False)
+plt.subplots_adjust(left=0.10, right=0.95, top=0.95, bottom=0.10)
+
+output_file = os.path.join(output_dir, "lrscaler_ablation_loss.pdf")
+save_figure(fig, output_file, formats=["pdf", "png", "eps"])
+
