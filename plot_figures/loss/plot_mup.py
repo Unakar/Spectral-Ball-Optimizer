@@ -35,7 +35,7 @@ RAW_DATA_DIR = Path(__file__).parent.parent / "raw_data"
 OUTPUT_DIR = Path(__file__).parent / "results" / "mup"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-MUON_CSV = RAW_DATA_DIR / "muon_results.csv"
+MUON_CSV = RAW_DATA_DIR / "mup" / "muon_results.csv"
 SPBALL_CSV = RAW_DATA_DIR / "mup" / "spball_results.csv"
 
 # 配色方案 - 使用鲜明的调色板
@@ -191,7 +191,6 @@ def plot_single_optimizer(
             colors=color,
             linestyles="dashed",
             linewidth=1.5,
-            alpha=0.6,
             zorder=1,
         )
     # 恢复 y 轴范围（避免 vlines 扩展范围）
