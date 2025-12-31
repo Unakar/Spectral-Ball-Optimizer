@@ -85,7 +85,7 @@ def set_lr_xticks(ax):
     ax.set_xscale("log")
     ax.xaxis.set_major_locator(FixedLocator(ALL_LR_TICKS))
     ax.xaxis.set_major_formatter(FuncFormatter(format_lr_tick))
-    ax.tick_params(axis="x", rotation=45)
+    ax.tick_params(axis="x", rotation=75)
 
 
 def load_and_process_data(csv_path: Path) -> pd.DataFrame:
@@ -187,12 +187,11 @@ def plot_single_optimizer(
     for min_lr, min_loss, color in min_points:
         ax.vlines(
             x=min_lr,
-            ymin=y_min,
+            ymin=2.6,  # 保证最低点在所有图的最低点
             ymax=min_loss,
             colors=color,
             linestyles="dashed",
-            linewidth=1.2,
-            alpha=0.6,
+            linewidth=1.5,
             zorder=1,
         )
     # 恢复 y 轴范围（避免 vlines 扩展范围）
@@ -203,36 +202,54 @@ def plot_mup_triple_comparison():
     """绘制 AdamW, Muon 和 Spectral Sphere 的 muP 三优化器对比图"""
 
     # 创建图形（三个子图）
-    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5))
 
     # 加载并绘制 AdamW
     if ADAMW_CSV.exists():
         df_adamw = load_and_process_data(ADAMW_CSV)
-        plot_single_optimizer(axes[0], df_adamw, "AdamW", show_legend=False, show_ylabel=True)
+        plot_single_optimizer(
+            axes[0], df_adamw, "AdamW", show_legend=False, show_ylabel=True
+        )
     else:
         axes[0].text(
-            0.5, 0.5, "adamw_results.csv not found",
-            ha="center", va="center", transform=axes[0].transAxes,
+            0.5,
+            0.5,
+            "adamw_results.csv not found",
+            ha="center",
+            va="center",
+            transform=axes[0].transAxes,
         )
 
     # 加载并绘制 Muon
     if MUON_CSV.exists():
         df_muon = load_and_process_data(MUON_CSV)
-        plot_single_optimizer(axes[1], df_muon, "Muon", show_legend=False, show_ylabel=False)
+        plot_single_optimizer(
+            axes[1], df_muon, "Muon", show_legend=False, show_ylabel=False
+        )
     else:
         axes[1].text(
-            0.5, 0.5, "muon_results.csv not found",
-            ha="center", va="center", transform=axes[1].transAxes,
+            0.5,
+            0.5,
+            "muon_results.csv not found",
+            ha="center",
+            va="center",
+            transform=axes[1].transAxes,
         )
 
     # 加载并绘制 Spectral Sphere
     if SPBALL_CSV.exists():
         df_spball = load_and_process_data(SPBALL_CSV)
-        plot_single_optimizer(axes[2], df_spball, "Spectral Sphere", show_legend=False, show_ylabel=False)
+        plot_single_optimizer(
+            axes[2], df_spball, "Spectral Sphere", show_legend=False, show_ylabel=False
+        )
     else:
         axes[2].text(
-            0.5, 0.5, "spball_results.csv not found",
-            ha="center", va="center", transform=axes[2].transAxes,
+            0.5,
+            0.5,
+            "spball_results.csv not found",
+            ha="center",
+            va="center",
+            transform=axes[2].transAxes,
         )
 
     # 统一三个子图的 y 轴范围
@@ -242,7 +259,7 @@ def plot_mup_triple_comparison():
         y_min, y_max = ax.get_ylim()
         y_mins.append(y_min)
         y_maxs.append(y_max)
-    
+
     # 统一设置 y 轴范围
     common_y_min = 2.6
     common_y_max = max(y_maxs)
@@ -254,7 +271,8 @@ def plot_mup_triple_comparison():
 
     # 添加星星图例项表示 min loss
     star_handle = Line2D(
-        [0], [0],
+        [0],
+        [0],
         marker="*",
         color="gray",
         markersize=14,
@@ -268,22 +286,24 @@ def plot_mup_triple_comparison():
 
     # 在图的底部添加统一的横向图例
     legend = fig.legend(
-        handles, labels,
+        handles,
+        labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0),
+        bbox_to_anchor=(0.5, -0.05),
         ncol=len(labels),
         framealpha=0.95,
         edgecolor="black",
-        fontsize=12,
+        fontsize=20,
     )
     legend.get_frame().set_linewidth(1.0)
 
     # 在三图下方中间添加共享的 x 轴标签
-    fig.text(0.5, 0.16, "LR", ha="center", va="bottom", fontsize=16, fontweight="bold")
+    fig.text(0.355, 0.16, "LR", ha="center", va="bottom", fontsize=16, fontweight="bold")
+    fig.text(0.665, 0.16, "LR", ha="center", va="bottom", fontsize=16, fontweight="bold")
 
     # 调整布局
     fig.set_constrained_layout(False)
-    plt.subplots_adjust(left=0.06, right=0.98, top=0.92, bottom=0.22, wspace=0.15)
+    plt.subplots_adjust(left=0.08, right=0.95, top=0.95, bottom=0.22)
 
     # 保存
     output_file = OUTPUT_DIR / "mup_triple_comparison.pdf"
@@ -304,4 +324,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
