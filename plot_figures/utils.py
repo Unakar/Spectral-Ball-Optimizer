@@ -32,6 +32,8 @@ ABLATION_COLORS = [
     "#f59e0b",
     "#86198f",
     "#0891b2",
+    "#dc2626",
+    "#2563eb"
 ]
 
 DARK_COLORS = {
