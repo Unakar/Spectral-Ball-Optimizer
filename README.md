@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Maintaining Θ(1) activation scale is a fundamental design principle in deep learning, enabling width-invariant scaling paradigms like **μ**P. While emerging optimizers such as Muon apply spectral constraints to update gradients, they leave weights spectrally unconstrained, which hurts forward stability and breaks scaling law transfer. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully **μ**P-aligned optimization process. We implement SSO as an efficient, numerically stable parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball)
+Maintaining Θ(1) activation scale is a fundamental design principle in deep learning, enabling width-invariant scaling paradigms like **μ**P. While emerging optimizers such as Muon apply spectral constraints to update gradients, they leave weights spectrally unconstrained, which hurts forward stability and breaks scaling law transfer. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully **μ**P-aligned optimization process. We implement SSO as an efficient, numerically stable parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball).
 
 ## Key Features
 
@@ -59,6 +59,27 @@ For t = 0, 1, ...
     Φ_t ← msign(M̂_t + λ*_t · Θ_t)
     W_{t+1} ← W_t - η · R · Φ_t                  # μP style update
 ```
+
+## Model Checkpoints
+
+We release pretrained Dense 1.7B checkpoints for each optimizer:
+
+| Optimizer | Checkpoint |
+|-----------|------------|
+| AdamW | <a href="https://huggingface.co/unakar666/qwen3-1.7B-adamw"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
+| Muon | <a href="https://huggingface.co/unakar666/qwen3-1.7B-muon"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
+| MuonSphere | <a href="https://huggingface.co/unakar666/qwen3-1.7B-muonball"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
+| Spectral Sphere | <a href="https://huggingface.co/unakar666/qwen3-1.7B-spball"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
+
+## WandB Reports
+
+Detailed training logs and metrics are available on WandB:
+
+| Experiment | Description | Link |
+|------------|-------------|------|
+| Optimizer Arena | Main Experiments on Dense, MoE, DeepNet | [Optimizer_Arena](https://wandb.ai/rqn17762075640-ustc/Optimizer_Arena) |
+| μP Transfer | **μ**P Learning Rate Transfer Grid Search | [mup_arena](https://wandb.ai/rqn17762075640-ustc/mup_arena) |
+| Spectral Radius | Spectral Radius Search for Tunable Activation Scale | [radius_arena](https://wandb.ai/rqn17762075640-ustc/radius_arena) |
 
 ## Experimental Results
 
