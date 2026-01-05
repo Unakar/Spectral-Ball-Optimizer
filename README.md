@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Maintaining Θ(1) activation scale is a fundamental design principle in deep learning, enabling width-invariant scaling paradigms like **μ**P. While emerging optimizers such as Muon apply spectral constraints to update gradients, they leave weights spectrally unconstrained, which hurts forward stability and breaks scaling law transfer. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully **μ**P-aligned optimization process. We implement SSO as an efficient, numerically stable parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations.
+Maintaining Θ(1) activation scale is a fundamental design principle in deep learning, enabling width-invariant scaling paradigms like **μ**P. While emerging optimizers such as Muon apply spectral constraints to update gradients, they leave weights spectrally unconstrained, which hurts forward stability and breaks scaling law transfer. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully **μ**P-aligned optimization process. We implement SSO as an efficient, numerically stable parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball)
 
 ## Key Features
 
@@ -24,7 +24,7 @@ Maintaining Θ(1) activation scale is a fundamental design principle in deep lea
 SSO performs **steepest descent** under the **spectral norm**, constraining both the **weights** and the **updates** to a spectral sphere of radius R = Θ(√(d_out/d_in)).
 
 <p align="center">
-  <img src="figures/sso20-1.png" width="600">
+  <img src="figures/geometry.png" width="450">
 </p>
 
 **Geometry of Steepest Descent Update Directions.** The left solid arc denotes the W sphere, while the right dotted arc denotes the ΔW sphere (unit Φ scaled by η). The shaded region represents the feasible set within the tangent space of the W sphere at step W_i. Under weight constraint, projecting G onto the tangent space (Spectral Sphere) yields the largest update angle.
@@ -89,7 +89,7 @@ As a reference point, AdamW attains a final validation loss of 2.588 at 23k step
 
 ### Megatron-LM Integration
 
-SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball` or `--optimizer spectral_ball_dist` for distributed training.
+SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball_dist` for distributed training.
 
 ### Hyperparameters
 
