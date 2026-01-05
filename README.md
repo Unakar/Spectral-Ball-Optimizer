@@ -1,6 +1,10 @@
-# Spectral-Sphere-Optimizer
+# Fully **μP** Aligned LLM Training on Spectral Sphere
 
-Pretrain code is avaliable at https://github.com/Unakar/Megatron-LM/tree/spectral_ball
+<div align="center">
+  <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_arena_v2"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
+  <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
+  <a href="https://huggingface.co/collections/unakar666/spectral-sphere-optimizer"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="16" width="16" style="vertical-align:middle"> <b>HuggingFace</b></a>
+</div>
 
 ## Code Structure
 
