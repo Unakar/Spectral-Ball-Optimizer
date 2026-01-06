@@ -3,7 +3,7 @@
 <div align="center">
   <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://www.nvidia.com/favicon.ico" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
   <a href="https://wandb.ai/rqn17762075640-ustc/Optimizer_Arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
-  <a href="https://huggingface.co/collections/unakar666/spectral-sphere-optimizer"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="16" width="16" style="vertical-align:middle"> <b>HuggingFace</b></a>
+  <a href="https://huggingface.co/collections/unakar666/spectral-sphere-optimizer"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="16" width="16" style="vertical-align:middle"> <b>Models</b></a>
 </div>
 
 ## Abstract
@@ -60,17 +60,6 @@ For t = 0, 1, ...
     W_{t+1} ← W_t - η · R · Φ_t                  # μP style update
 ```
 
-## Model Checkpoints
-
-We release pretrained Dense 1.7B checkpoints for each optimizer:
-
-| Optimizer | Checkpoint |
-|-----------|------------|
-| AdamW | <a href="https://huggingface.co/unakar666/qwen3-1.7B-adamw"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
-| Muon | <a href="https://huggingface.co/unakar666/qwen3-1.7B-muon"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
-| MuonSphere | <a href="https://huggingface.co/unakar666/qwen3-1.7B-muonball"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
-| Spectral Sphere | <a href="https://huggingface.co/unakar666/qwen3-1.7B-spball"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="20"></a> |
-
 ## WandB Reports
 
 Detailed training logs and metrics are available on WandB:
@@ -81,30 +70,6 @@ Detailed training logs and metrics are available on WandB:
 | μP Transfer | **μ**P Learning Rate Transfer Grid Search | [mup_arena](https://wandb.ai/rqn17762075640-ustc/mup_arena) |
 | Spectral Radius | Spectral Radius Search for Tunable Activation Scale | [radius_arena](https://wandb.ai/rqn17762075640-ustc/radius_arena) |
 
-## Experimental Results
-
-### Dense 1.7B Validation Loss
-
-<p align="center">
-  <img src="figures/dense_val_loss-1.png" width="600">
-</p>
-
-As a reference point, AdamW attains a final validation loss of 2.588 at 23k steps. Even under an AdamW-favorable setup (lr tuned for AdamW at 5e-3), spectral-based optimizers exhibit higher efficiency: Muon reaches the same loss in 20.3k steps (12% fewer), while Spectral Sphere does so in 18.5k steps (19% fewer).
-
-### Downstream Task Performance (Dense 1.7B, 100B tokens)
-
-| Optimizer | LMB. PPL↓ | LMB. acc↑ | CSQA↑ | PIQA↑ | Hella.↑ | Wino.↑ | ARC-e↑ | ARC-c↑ | BoolQ↑ | Avg.↑ |
-|-----------|-----------|-----------|-------|-------|---------|--------|--------|--------|--------|-------|
-| AdamW | 5.40 | 63.71 | 19.66 | 74.70 | 47.90 | 62.59 | 68.81 | 37.37 | 63.24 | 54.75 |
-| Muon | 5.05 | 65.19 | 19.00 | 75.35 | 48.91 | 61.72 | 70.24 | 37.46 | 64.22 | 55.26 |
-| MuonSphere | **4.87** | **65.55** | 20.07 | 74.97 | 49.20 | 62.83 | 71.51 | **38.40** | **66.97** | 56.19 |
-| **Spectral Sphere** | 5.00 | 65.07 | **21.05** | **75.95** | **49.25** | **63.77** | **71.80** | 38.31 | 65.57 | **56.35** |
-
-### Validated Architectures
-
-- **Dense 1.7B**: Qwen3-1.7B architecture with GQA, QK-Norm, SwiGLU, RoPE
-- **MoE 8B-A1B**: DeepSeek-V3 style, 27 layers, 64 experts with top-4 routing + 1 shared expert
-- **DeepNet 200 Layers**: Stress test for optimizer stability under extreme depth
 
 ## Usage
 
@@ -133,13 +98,67 @@ SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball_di
 
 | Argument | Default | Description |
 |----------|---------|-------------|
+| `--spectral-mup-init` | - | Enable spectral μP initialization for weights |
 | `--spectral-ball-no-split-qkv` | (enabled) | Disable splitting QKV parameters |
 | `--spectral-ball-qkv-split-mode` | component | QKV split: component, group, or head |
 | `--spectral-ball-no-split-fc1` | (enabled) | Disable splitting gate/up in SwiGLU |
 | `--spectral-ball-no-split-moe-experts` | (enabled) | Disable per-expert splitting in MoE |
 
+### Model "intrinsic Health" Monitors
+
+We support logging metrics below for monitoring training stability:
+
+```bash
+# log optimizer update rms before lr scaler
+--log-per-module-update-rms
+
+--log-per-module-grad-rms
+
+--log-hidden-states embeddings input_layernorm attention::linear_qkv \
+    attention::linear_q attention::linear_k attention::linear_v \
+    attention::core_attention attention::o_proj pre_mlp_layernorm mlp
+
+# Log parameter statistics
+--log-params attention::linear_qkv attention::o_proj mlp::linear_fc1 \
+    mlp::linear_fc2 input_layernorm pre_mlp_layernorm embedding lm_head
+```
+
+### Benchmark Evaluation
+
+We support downstream task evaluation during training:
+
+```bash
+--benchmark-eval
+--benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
+```
 
 ## Code Structure
 
 - `megatron_scripts/`: Training scripts for historical experiments
 - `plot_figures/`: Plot code for reproduction of figures in paper
+
+
+# Experimental Results
+
+### Dense 1.7B Validation Loss
+
+<p align="center">
+  <img src="figures/dense_val_loss-1.png" width="600">
+</p>
+
+As a reference point, AdamW attains a final validation loss of 2.588 at 23k steps. Even under an AdamW-favorable setup (lr tuned for AdamW at 5e-3), spectral-based optimizers exhibit higher efficiency: Muon reaches the same loss in 20.3k steps (12% fewer), while Spectral Sphere does so in 18.5k steps (19% fewer).
+
+### Downstream Task Performance (Dense 1.7B, 100B tokens)
+
+| Optimizer | LMB. PPL↓ | LMB. acc↑ | CSQA↑ | PIQA↑ | Hella.↑ | Wino.↑ | ARC-e↑ | ARC-c↑ | BoolQ↑ | Avg.↑ |
+|-----------|-----------|-----------|-------|-------|---------|--------|--------|--------|--------|-------|
+| AdamW | 5.40 | 63.71 | 19.66 | 74.70 | 47.90 | 62.59 | 68.81 | 37.37 | 63.24 | 54.75 |
+| Muon | 5.05 | 65.19 | 19.00 | 75.35 | 48.91 | 61.72 | 70.24 | 37.46 | 64.22 | 55.26 |
+| MuonSphere | **4.87** | **65.55** | 20.07 | 74.97 | 49.20 | 62.83 | 71.51 | **38.40** | **66.97** | 56.19 |
+| **Spectral Sphere** | 5.00 | 65.07 | **21.05** | **75.95** | **49.25** | **63.77** | **71.80** | 38.31 | 65.57 | **56.35** |
+
+### Validated Architectures
+
+- **Dense 1.7B**: Qwen3-1.7B architecture with GQA, QK-Norm, SwiGLU, RoPE
+- **MoE 8B-A1B**: DeepSeek-V3 style, 27 layers, 64 experts with top-4 routing + 1 shared expert
+- **DeepNet 200 Layers**: Stress test for optimizer stability under extreme depth
