@@ -29,7 +29,7 @@ SSO performs **steepest descent** under the **spectral norm**, constraining both
 
 **Geometry of Steepest Descent Update Directions.** The left solid arc denotes the W sphere, while the right dotted arc denotes the ΔW sphere (unit Φ scaled by η). The shaded region represents the feasible set within the tangent space of the W sphere at step W_i. Under weight constraint, projecting G onto the tangent space (Spectral Sphere) yields the largest update angle.
 
-### Algorithm
+### [Algorithm](https://github.com/Unakar/Megatron-LM/blob/spectral_ball/emerging_optimizers/orthogonalized_optimizers/spectral_ball_utils.py)
 
 ```
 Algorithm: Spectral Sphere Optimizer (SSO)
@@ -106,7 +106,7 @@ SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball_di
 
 ### Model "intrinsic Health" Monitors
 
-We support logging metrics below for monitoring training stability:
+We support logging metrics below for monitoring training stability. Note that MoE max-vio and module spectral norm are logged by default.
 
 ```bash
 # log optimizer update rms before lr scaler
@@ -138,7 +138,7 @@ We support downstream task evaluation during training:
 - `plot_figures/`: Plot code for reproduction of figures in paper
 
 
-# Experimental Results
+## Experimental Results
 
 ### Dense 1.7B Validation Loss
 
