@@ -56,6 +56,7 @@ def plot_activation(
     log_scale_y: bool = False,
     min_step: int = None,
     linewidth: float = 1.0,
+    legend_linewidth: float = None,
 ):
     """绘制 activation 图
 
@@ -68,6 +69,7 @@ def plot_activation(
         log_scale_y: 是否使用 y轴 log scale
         min_step: 最小 step（从这个 step 开始画）
         linewidth: 曲线宽度
+        legend_linewidth: 图例中线条宽度（默认与曲线相同）
     """
 
     if not csv_path.exists():
@@ -135,6 +137,11 @@ def plot_activation(
     )
     legend.get_frame().set_linewidth(1.0)
 
+    # 单独设置图例中线条的粗细
+    if legend_linewidth is not None:
+        for line in legend.get_lines():
+            line.set_linewidth(legend_linewidth)
+
     ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
     ax.set_axisbelow(True)
 
@@ -171,6 +178,7 @@ def main():
         log_scale_y=True,
         min_step=2000,
         linewidth=0.4,
+        legend_linewidth=2.0,
     )
 
     print("\n生成 RMS 图...")
