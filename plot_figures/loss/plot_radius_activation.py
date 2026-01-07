@@ -168,10 +168,9 @@ def main():
         title="MLP Activation AbsMax",
         ylabel="AbsMax",
         output_name="radius_mlp_absmax",
-        exclude_radius=["radius10"],
         log_scale_y=True,
         min_step=2000,
-        linewidth=0.5,
+        linewidth=0.4,
     )
 
     print("\n生成 RMS 图...")
