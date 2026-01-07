@@ -67,7 +67,7 @@ def set_lr_xticks(ax, lr_values):
     sorted_lrs = sorted(set(lr_values))
     ax.set_xticks(range(len(sorted_lrs)))
     ax.set_xticklabels([format_lr_tick(lr, None) for lr in sorted_lrs])
-    ax.tick_params(axis="x", rotation=45)
+    ax.tick_params(axis="x")
     return sorted_lrs
 
 
@@ -128,22 +128,22 @@ def plot_radius_search():
 
     # 设置 x 轴刻度（均匀尺度）
     set_lr_xticks(ax, all_lrs)
-    ax.set_xlabel("Learning Rate", fontweight="bold", fontsize=14)
-    ax.set_ylabel("Final Loss", fontweight="bold", fontsize=14)
+    ax.set_xlabel("Learning Rate")
+    ax.set_ylabel("Final Loss")
 
     # 设置图例（放在中间上方）
-    legend = ax.legend(
-        loc="upper center",
-        bbox_to_anchor=(0.5, 1.02),
-        ncol=len(radius_scales),
-        frameon=True,
-        fancybox=False,
-        shadow=False,
-        framealpha=0.95,
-        edgecolor="black",
-        fontsize=12,
-    )
-    legend.get_frame().set_linewidth(1.0)
+    # legend = ax.legend(
+    #     loc="upper center",
+    #     bbox_to_anchor=(0.5, 1.02),
+    #     ncol=len(radius_scales),
+    #     frameon=True,
+    #     fancybox=False,
+    #     shadow=False,
+    #     framealpha=0.95,
+    #     edgecolor="black",
+    #     fontsize=12,
+    # )
+    # legend.get_frame().set_linewidth(1.0)
 
     ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
     ax.set_axisbelow(True)

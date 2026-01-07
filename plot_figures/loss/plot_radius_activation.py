@@ -30,20 +30,20 @@ RMS_CSV = RAW_DATA_DIR / "radius" / "radius_mlp_rms.csv"
 
 # 配色方案 - 不同 radius scale 使用不同颜色
 COLORS = {
-    "radius0.1": "#E63946",   # 红色
-    "radius0.5": "#F77F00",   # 橙色
-    "radius1": "#2A9D8F",     # 青色
-    "radius2": "#264653",     # 深蓝灰色
-    "radius10": "#7209B7",    # 紫色
+    "radius0.1": "#E63946",  # 红色
+    "radius0.5": "#F77F00",  # 橙色
+    "radius1": "#2A9D8F",  # 青色
+    "radius2": "#264653",  # 深蓝灰色
+    "radius10": "#7209B7",  # 紫色
 }
 
 # 图例标签映射
 LABELS = {
-    "radius0.1": "radius=0.1",
-    "radius0.5": "radius=0.5",
-    "radius1": "radius=1",
-    "radius2": "radius=2",
-    "radius10": "radius=10",
+    "radius0.1": "$c=0.1$",
+    "radius0.5": "$c=0.5$",
+    "radius1": "$c=1.0$",
+    "radius2": "$c=2.0$",
+    "radius10": "$c=10.0$",
 }
 
 
@@ -56,6 +56,7 @@ def plot_activation(
     log_scale_y: bool = False,
     min_step: int = None,
     linewidth: float = 1.0,
+    legend: bool = True,
     legend_linewidth: float = None,
     skip_step_interval: int = None,
 ):
@@ -125,22 +126,20 @@ def plot_activation(
     if log_scale_y:
         ax.set_yscale("log")
 
-    ax.set_xlabel("Step", fontsize=14)
-    ax.set_ylabel(ylabel, fontsize=14)
+    ax.set_xlabel("Step")
+    ax.set_ylabel(ylabel)
 
     # 设置图例（放在中间上方）
-    legend = ax.legend(
-        loc="upper center",
-        bbox_to_anchor=(0.5, 1.02),
-        ncol=len(radius_order),
-        frameon=True,
-        fancybox=False,
-        shadow=False,
-        framealpha=0.95,
-        edgecolor="black",
-        fontsize=11,
-    )
-    legend.get_frame().set_linewidth(1.0)
+    if legend:
+        legend = ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.46, 1.1),
+            ncol=len(radius_order),
+            framealpha=0.95,
+            edgecolor="black",
+            fontsize=14,
+        )
+        legend.get_frame().set_linewidth(1.0)
 
     # 单独设置图例中线条的粗细
     if legend_linewidth is not None:
@@ -168,6 +167,52 @@ def plot_activation(
     save_figure(fig, str(output_file), formats=["pdf", "png", "eps"])
 
 
+def plot_legend_only():
+    """单独生成只包含图例的图片"""
+    print("\n生成单独的图例图片...")
+
+    # 创建一个空的图形
+    fig, ax = plt.subplots(figsize=(8, 0.5))
+
+    # 隐藏所有轴线
+    ax.spines["left"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    # 五种曲线的顺序
+    radius_order = ["radius0.1", "radius0.5", "radius1", "radius2", "radius10"]
+
+    # 为每种曲线创建一个线对象（仅用于图例）
+    for radius_col in radius_order:
+        color = COLORS.get(radius_col, "#333333")
+        label = LABELS.get(radius_col, radius_col)
+
+        # 绘制一个不可见的线，仅用于生成图例
+        ax.plot([], [], linewidth=1.5, color=color, label=label, alpha=0.85)
+
+    # 使用用户指定的图例配置
+    legend = ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.46, 1.1),
+        ncol=len(radius_order),
+        framealpha=0.95,
+        edgecolor="black",
+        fontsize=14,
+    )
+    legend.get_frame().set_linewidth(1.0)
+
+    # 调整布局
+    plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
+
+    # 保存图片（仅PDF格式）
+    output_file = OUTPUT_DIR / "radius_legend.pdf"
+    save_figure(fig, str(output_file), formats=["pdf"])
+    print(f"图例图片已保存到: {output_file}")
+
+
 def main():
     """主函数"""
     print("=" * 60)
@@ -183,7 +228,7 @@ def main():
         log_scale_y=True,
         min_step=2000,
         linewidth=0.4,
-        legend_linewidth=2.0,
+        legend=False,
     )
 
     print("\n生成 RMS 图...")
@@ -195,11 +240,14 @@ def main():
         log_scale_y=True,
         linewidth=1.5,
         skip_step_interval=500,
+        legend=False,
     )
+
+    # 生成单独的图例图片
+    plot_legend_only()
 
     print("\n完成！")
 
 
 if __name__ == "__main__":
     main()
-
