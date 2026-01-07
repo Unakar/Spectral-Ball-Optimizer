@@ -29,6 +29,9 @@ os.makedirs(output_dir, exist_ok=True)
 # 读取数据
 data = pd.read_csv(os.path.join(raw_data_dir, "hsrms_mlp.csv"))
 
+# 跳过 501, 1001, 1501... 这样的点
+data = data[data["Step"] % 500 != 1]
+
 # 简化列名映射
 col_mapping = {
     "spectral sphere": [

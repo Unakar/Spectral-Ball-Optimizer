@@ -57,6 +57,7 @@ def plot_activation(
     min_step: int = None,
     linewidth: float = 1.0,
     legend_linewidth: float = None,
+    skip_step_interval: int = None,
 ):
     """绘制 activation 图
 
@@ -70,6 +71,7 @@ def plot_activation(
         min_step: 最小 step（从这个 step 开始画）
         linewidth: 曲线宽度
         legend_linewidth: 图例中线条宽度（默认与曲线相同）
+        skip_step_interval: 跳过的 step 间隔（如 500 表示跳过 500, 1000, 1500...）
     """
 
     if not csv_path.exists():
@@ -81,6 +83,10 @@ def plot_activation(
     # 过滤 step
     if min_step is not None:
         df = df[df["Step"] >= min_step]
+
+    # 跳过特定间隔的 step（如 500 表示跳过 501, 1001, 1501...）
+    if skip_step_interval is not None:
+        df = df[df["Step"] % skip_step_interval != 1]
 
     # 创建图形
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -188,6 +194,7 @@ def main():
         output_name="radius_mlp_rms",
         log_scale_y=True,
         linewidth=1.5,
+        skip_step_interval=500,
     )
 
     print("\n完成！")
