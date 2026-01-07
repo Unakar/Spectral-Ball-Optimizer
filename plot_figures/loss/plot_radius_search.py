@@ -93,7 +93,7 @@ def plot_radius_search():
     df = load_and_process_data(CSV_PATH)
 
     # 创建图形
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     radius_scales = sorted(df["radius_value"].unique())
 
@@ -130,12 +130,11 @@ def plot_radius_search():
     set_lr_xticks(ax, all_lrs)
     ax.set_xlabel("Learning Rate", fontweight="bold", fontsize=14)
     ax.set_ylabel("Final Loss", fontweight="bold", fontsize=14)
-    ax.set_title("Radius Scale Search", fontsize=18, fontweight="bold", pad=35)
 
-    # 设置图例（放在中间上方，标题下方）
+    # 设置图例（放在中间上方）
     legend = ax.legend(
         loc="upper center",
-        bbox_to_anchor=(0.5, 1.08),
+        bbox_to_anchor=(0.5, 1.02),
         ncol=len(radius_scales),
         frameon=True,
         fancybox=False,
@@ -160,7 +159,7 @@ def plot_radius_search():
 
     # 调整布局
     fig.set_constrained_layout(False)
-    plt.subplots_adjust(left=0.10, right=0.95, top=0.85, bottom=0.12)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.90, bottom=0.12)
 
     # 保存图片
     output_file = OUTPUT_DIR / "radius_search.pdf"

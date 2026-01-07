@@ -121,12 +121,11 @@ def plot_activation(
 
     ax.set_xlabel("Step", fontsize=14)
     ax.set_ylabel(ylabel, fontsize=14)
-    ax.set_title(title, fontsize=18, pad=35)
 
     # 设置图例（放在中间上方）
     legend = ax.legend(
         loc="upper center",
-        bbox_to_anchor=(0.5, 1.08),
+        bbox_to_anchor=(0.5, 1.02),
         ncol=len(radius_order),
         frameon=True,
         fancybox=False,
@@ -156,7 +155,7 @@ def plot_activation(
 
     # 调整布局
     fig.set_constrained_layout(False)
-    plt.subplots_adjust(left=0.10, right=0.95, top=0.85, bottom=0.12)
+    plt.subplots_adjust(left=0.10, right=0.95, top=0.90, bottom=0.12)
 
     # 保存图片
     output_file = OUTPUT_DIR / f"{output_name}.pdf"
