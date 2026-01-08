@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://www.nvidia.com/favicon.ico" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
-  <a href="https://wandb.ai/rqn17762075640-ustc/Optimizer_Arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
+  <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
   <a href="https://huggingface.co/collections/unakar666/spectral-sphere-optimizer"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height="16" width="16" style="vertical-align:middle"> <b>Models</b></a>
 </div>
 
@@ -62,13 +62,12 @@ For t = 0, 1, ...
 
 ## WandB Reports
 
-Detailed training logs and metrics are available on WandB:
 
-| Experiment | Description | Link |
-|------------|-------------|------|
-| Optimizer Arena | Main Experiments on Dense, MoE, DeepNet | [Optimizer_Arena](https://wandb.ai/rqn17762075640-ustc/Optimizer_Arena) |
-| μP Transfer | **μ**P Learning Rate Transfer Grid Search | [mup_arena](https://wandb.ai/rqn17762075640-ustc/mup_arena) |
-| Spectral Radius | Spectral Radius Search for Tunable Activation Scale | [radius_arena](https://wandb.ai/rqn17762075640-ustc/radius_arena) |
+| Description | Link |
+|-------------|------|
+| Main Experiments on Dense, MoE, DeepNet | [Baselines](https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena) |
+| **μ**P Learning Rate Transfer Grid Search | [MuP Search](https://wandb.ai/rqn17762075640-ustc/optimizer_mup_arena) |
+| Spectral Radius Search for Tunable Activation Scale | [Radius Search](https://wandb.ai/rqn17762075640-ustc/optimizer_radius_arena) |
 
 
 ## Usage
@@ -131,12 +130,6 @@ We support downstream task evaluation during training:
 --benchmark-eval
 --benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
 ```
-
-## Code Structure
-
-- `megatron_scripts/`: Training scripts for historical experiments
-- `plot_figures/`: Plot code for reproduction of figures in paper
-
 
 ## Experimental Results
 

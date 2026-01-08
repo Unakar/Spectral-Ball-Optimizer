@@ -6,7 +6,7 @@ export WANDB_MODE=offline
 
 TOTAL_TOKENS=100000000000 # 大概100B！
 
-WORLD_SIZE=$((8 * $PET_NNODES))
+WORLD_SIZE=$((8 * $NNODES))
 TP_SIZE=${TP_SIZE:-1}
 PP_SIZE=${PP_SIZE:-1}
 
@@ -141,8 +141,8 @@ LOGGER_ARGS=(
 
 DISTRIBUTED_ARGS=(
     --nproc_per_node 8
-    --nnodes $PET_NNODES
-    --node_rank $PET_NODE_RANK
+    --nnodes $NNODES
+    --node_rank $NODE_RANK
     --master_addr $MASTER_ADDR
     --master_port $MASTER_PORT
 )
