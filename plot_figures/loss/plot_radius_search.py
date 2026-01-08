@@ -36,11 +36,11 @@ CSV_PATH = RAW_DATA_DIR / "radius" / "radius_search.csv"
 
 # 配色方案 - 不同 radius scale 使用不同颜色
 COLORS = {
-    0.1: "#E63946",   # 红色
-    0.5: "#F77F00",   # 橙色
-    1: "#2A9D8F",     # 青色
-    2: "#264653",     # 深蓝灰色
-    10: "#7209B7",    # 紫色
+    0.1: "#E63946",  # 红色
+    0.5: "#F77F00",  # 橙色
+    1: "#2A9D8F",  # 青色
+    2: "#264653",  # 深蓝灰色
+    10: "#7209B7",  # 紫色
 }
 
 
@@ -125,11 +125,12 @@ def plot_radius_search():
             alpha=0.85,
         )
 
-
     # 设置 x 轴刻度（均匀尺度）
     set_lr_xticks(ax, all_lrs)
-    ax.set_xlabel("Learning Rate")
-    ax.set_ylabel("Final Loss")
+    ax.set_xlabel("Learning Rate", fontweight="bold", fontsize=24)
+    ax.set_ylabel("Final Loss", fontweight="bold", fontsize=24)
+
+    ax.tick_params(axis="both", which="major", labelsize=18)
 
     # 设置图例（放在中间上方）
     # legend = ax.legend(
@@ -179,4 +180,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

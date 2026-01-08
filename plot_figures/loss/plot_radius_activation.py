@@ -126,8 +126,10 @@ def plot_activation(
     if log_scale_y:
         ax.set_yscale("log")
 
-    ax.set_xlabel("Step")
-    ax.set_ylabel(ylabel)
+    ax.set_xlabel("Step", fontweight="bold", fontsize=24)
+    ax.set_ylabel(ylabel, fontweight="bold", fontsize=24)
+
+    ax.tick_params(axis="both", which="major", labelsize=18)
 
     # 设置图例（放在中间上方）
     if legend:

@@ -306,9 +306,7 @@ def plot_f_lambda_multi_repeat(
     lambda_std = np.nanstd(zero_points)
 
     # 在图上再画出 mean 曲线，并加一条 ±std 的带状区域
-    ax.plot(
-        lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$ over repeats"
-    )
+    ax.plot(lambdas, f_mean, "k-", linewidth=1, label="Averaged $h(\\lambda)$")
     ax.fill_between(
         lambdas,
         f_mean - f_std,
@@ -330,7 +328,7 @@ def plot_f_lambda_multi_repeat(
             markersize=5,
             color=POINT_COLOR,
             alpha=0.9,
-            label="Averaged $\\lambda^\\ast$",
+            label="Averaged $\\lambda^\\star$",
         )
 
         ax.axhline(
@@ -348,13 +346,14 @@ def plot_f_lambda_multi_repeat(
             linewidth=1.2,
         )
 
-    ax.set_xlabel("$\lambda$")
-    ax.set_ylabel("$h(\lambda)$")
+    ax.set_xlabel("$\lambda$", fontweight="bold", fontsize=28)
+    ax.set_ylabel("$h(\lambda)$", fontweight="bold", fontsize=28)
+    ax.tick_params(axis="both", which="major", labelsize=18)
     # ax.set_title(title)
     ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
     ax.set_axisbelow(True)
     # 设置图例和坐标轴范围
-    set_legend_style(ax, loc="upper left")
+    set_legend_style(ax, loc="upper left", fontsize=20)
 
     # --------------------------
     # 添加放大的局部区域（右下角）
@@ -410,11 +409,11 @@ def plot_f_lambda_multi_repeat(
         linewidth=1.2,
     )
     ax_inset.text(
-        0.53,
-        0.45,
-        f"({lambda_mean:.3e}, {f_at_lambda_mean:.3e})",
+        0.51,
+        0.42,
+        f"({lambda_mean:.2e}, {f_at_lambda_mean:.2e})".replace("e-0", "e-"),
         transform=ax_inset.transAxes,
-        fontsize=10,
+        fontsize=14,
         color=POINT_COLOR,
         alpha=0.8,
     )

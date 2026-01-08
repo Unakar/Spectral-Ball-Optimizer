@@ -173,7 +173,7 @@ def set_axis_limits(ax, xlim=None, ylim=None, y_tick_interval=None):
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 
 
-def set_legend_style(ax, loc="upper right"):
+def set_legend_style(ax, loc="upper right", fontsize=16):
     """
     Set legend style for the given axis
 
@@ -188,6 +188,7 @@ def set_legend_style(ax, loc="upper right"):
         shadow=False,
         framealpha=0.95,
         edgecolor="black",
+        fontsize=fontsize,
     )
     legend.get_frame().set_linewidth(1.0)
     return legend

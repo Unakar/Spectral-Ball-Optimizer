@@ -166,7 +166,7 @@ def plot_single_optimizer(
     # x轴标签在 plot_mup_comparison 中统一设置
     if show_label:
         ax.set_ylabel("Val Loss", fontweight="bold")
-    ax.set_title(title, pad=10, fontsize=22)
+    ax.set_title(title, pad=10, fontsize=18)
     if show_legend:
         set_legend_style(ax, loc="upper right")
     ax.grid(True, linestyle="--", alpha=0.3, linewidth=0.8, zorder=1)
