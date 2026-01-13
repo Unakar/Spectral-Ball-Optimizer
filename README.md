@@ -27,38 +27,11 @@ SSO performs **steepest descent** under the **spectral norm**, constraining both
 <p align="center">
   <img src="figures/geo_analysis.png" width="80%">
 </p>
+<p align="center">
+  <img src="figures/algo.png" width="90%">
+</p>
 
-
-```
-Algorithm: Spectral Sphere Optimizer (SSO)
-─────────────────────────────────────────────────────────────────────────────
-Input: Initial 2D weights W₀, spectral μP scaler R = √(d_out/d_in), 
-       learning rate η, momentum β, tolerance ε
-
-Initialize: W₀ ← R · W₀ / ‖W₀‖₂,  M₀ ← 0
-
-For t = 0, 1, ...
-    G_t ← ∇_W L(W_t)
-    M_t ← β·M_t + (1-β)·G_t
-    M̂_t ← M_t / ‖M_t‖_F                          # Normalize for stability
-
-    // 1. Spectral Geometry Analysis
-    (σ_t, u_t, v_t) ← PowerIteration(W_t)        # Top singular value & vectors
-    Θ_t ← u_t · v_t^T                            # Tangent space projector
-
-    // 2. Retraction to Spectral Sphere
-    W_t ← W_t · R / σ_t
-
-    // 3. Steepest Descent Lagrange Solver
-    Define h(λ) := ⟨Θ_t, msign(M̂_t + λ·Θ_t)⟩
-    λ*_t ← Bisection(h, tolerance=ε)             # Find root of h(λ)=0
-
-    // 4. μP-Scaled Update
-    Φ_t ← msign(M̂_t + λ*_t · Θ_t)
-    W_{t+1} ← W_t - η · R · Φ_t                  # μP style update
-```
-
-## 3. WandB Reports
+## 3. WandB Runs
 
 
 | Description | Link |
@@ -152,14 +125,9 @@ We support downstream task evaluation during training:
 <p align="center">
   <img src="figures/dense17.png" width="90%">
 </p>
-
-
-| Optimizer | LMB. PPL↓ | LMB. acc↑ | CSQA↑ | PIQA↑ | Hella.↑ | Wino.↑ | ARC-e↑ | ARC-c↑ | BoolQ↑ | Avg.↑ |
-|-----------|-----------|-----------|-------|-------|---------|--------|--------|--------|--------|-------|
-| AdamW | 5.40 | 63.71 | 19.66 | 74.70 | 47.90 | 62.59 | 68.81 | 37.37 | 63.24 | 54.75 |
-| Muon | 5.05 | 65.19 | 19.00 | 75.35 | 48.91 | 61.72 | 70.24 | 37.46 | 64.22 | 55.26 |
-| MuonSphere | **4.87** | **65.55** | 20.07 | 74.97 | 49.20 | 62.83 | 71.51 | **38.40** | **66.97** | 56.19 |
-| SpectralSphere | 5.00 | 65.07 | **21.05** | **75.95** | **49.25** | **63.77** | **71.80** | 38.31 | 65.57 | **56.35** |
+<p align="center">
+  <img src="figures/denseeval.png" width="90%">
+</p>
 
 ---
 
