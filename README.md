@@ -143,3 +143,7 @@ We gratefully acknowledge the developers of [Emerging-Optimizers](https://github
 ## 7. License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
+
+## 8. Contact
+
+If you have any questions, please raise an issue or contact [Tian Xie](mailto:xqs2002@mail.ustc.edu.cn)
