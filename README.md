@@ -1,3 +1,4 @@
+# Controlled LLM Training on Spectral Sphere
 
 <div align="center">
   <a href="sso_paper.pdf">📄 <b>Paper</b></a>  |  
@@ -7,7 +8,7 @@
 
 ## 1. Introduction
 
-This repository contains the official implementation for the paper: **[Controlled LLM Training on Spectral Sphere 	](sso_paper.pdf)**.
+This repository contains the official implementation for the paper: **[Controlled LLM Training on Spectral Sphere](sso_paper.pdf)**.
 
 > **Abstract:** Scaling large models requires optimization strategies that ensure rapid convergence grounded in stability. Maximal Update Parametrization (μP) provides a theoretical safeguard for width-invariant Θ(1) activation control, whereas emerging optimizers like Muon are only "half-aligned" with these constraints: they control updates but allow weights to drift. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully μP-aligned optimization process. To enable large-scale training, we implement SSO as an efficient parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball).
 
@@ -24,10 +25,9 @@ This repository contains the official implementation for the paper: **[Controlle
 SSO performs **steepest descent** under the **spectral norm**, constraining both the **weights** and the **updates** to a spectral sphere of radius R = Θ(√(d_out/d_in)).
 
 <p align="center">
-  <img src="figures/geometry.png" width="450">
+  <img src="figures/geo_analysis.png" width="80%">
 </p>
 
-**Geometry of Steepest Descent Update Directions.** The left solid arc denotes the W sphere, while the right dotted arc denotes the ΔW sphere (unit Φ scaled by η). The shaded region represents the feasible set within the tangent space of the W sphere at step W_i. Under weight constraint, projecting G onto the tangent space (Spectral Sphere) yields the largest update angle.
 
 ```
 Algorithm: Spectral Sphere Optimizer (SSO)
@@ -129,27 +129,44 @@ We support downstream task evaluation during training:
 --benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
 ```
 
-## Experimental Results
-
-### Dense 1.7B Validation Loss
+## 5. Evaluation
+### Learning Rate Transfer
 
 <p align="center">
-  <img src="figures/dense_val_loss-1.png" width="600">
+  <img src="figures/mup_trans.png" width="90%">
 </p>
 
-As a reference point, AdamW attains a final validation loss of 2.588 at 23k steps. Even under an AdamW-favorable setup (lr tuned for AdamW at 5e-3), spectral-based optimizers exhibit higher efficiency: Muon reaches the same loss in 20.3k steps (12% fewer), while Spectral Sphere does so in 18.5k steps (19% fewer).
+---
 
-### Downstream Task Performance (Dense 1.7B, 100B tokens)
+### Controllable Activation Scale
+
+<p align="center">
+  <img src="figures/control_act.png" width="95%">
+</p>
+
+---
+
+
+### Dense 1.7B Eval
+
+<p align="center">
+  <img src="figures/dense17.png" width="90%">
+</p>
+
 
 | Optimizer | LMB. PPL↓ | LMB. acc↑ | CSQA↑ | PIQA↑ | Hella.↑ | Wino.↑ | ARC-e↑ | ARC-c↑ | BoolQ↑ | Avg.↑ |
 |-----------|-----------|-----------|-------|-------|---------|--------|--------|--------|--------|-------|
 | AdamW | 5.40 | 63.71 | 19.66 | 74.70 | 47.90 | 62.59 | 68.81 | 37.37 | 63.24 | 54.75 |
 | Muon | 5.05 | 65.19 | 19.00 | 75.35 | 48.91 | 61.72 | 70.24 | 37.46 | 64.22 | 55.26 |
 | MuonSphere | **4.87** | **65.55** | 20.07 | 74.97 | 49.20 | 62.83 | 71.51 | **38.40** | **66.97** | 56.19 |
-| **Spectral Sphere** | 5.00 | 65.07 | **21.05** | **75.95** | **49.25** | **63.77** | **71.80** | 38.31 | 65.57 | **56.35** |
+| SpectralSphere | 5.00 | 65.07 | **21.05** | **75.95** | **49.25** | **63.77** | **71.80** | 38.31 | 65.57 | **56.35** |
 
-### Validated Architectures
+---
 
-- **Dense 1.7B**: Qwen3-1.7B architecture with GQA, QK-Norm, SwiGLU, RoPE
-- **MoE 8B-A1B**: DeepSeek-V3 style, 27 layers, 64 experts with top-4 routing + 1 shared expert
-- **DeepNet 200 Layers**: Stress test for optimizer stability under extreme depth
+### MoE 8B-a1B Eval
+
+<p align="center">
+  <img src="figures/moe8B.png" width="90%">
+</p>
+
+---
