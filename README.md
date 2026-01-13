@@ -3,7 +3,7 @@
 <div align="center">
   <a href="sso_paper.pdf">📄 <b>Paper</b></a>  |  
   <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://www.nvidia.com/favicon.ico" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
-  <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
+  <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  
 </div>
 
 ## 1. Introduction
@@ -13,12 +13,9 @@ This repository contains the official implementation for the paper: **[Controlle
 > **Abstract:** Scaling large models requires optimization strategies that ensure rapid convergence grounded in stability. Maximal Update Parametrization (μP) provides a theoretical safeguard for width-invariant Θ(1) activation control, whereas emerging optimizers like Muon are only "half-aligned" with these constraints: they control updates but allow weights to drift. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully μP-aligned optimization process. To enable large-scale training, we implement SSO as an efficient parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball).
 
 **Key Contributions:**
-- **Better Convergence**: Outperforms Adamw and Muon
-- **Fully μP Aligned**: Both weights and updates satisfy spectral norm constraints
-- **No Weight Decay for 2D Weights**: Eliminates the need for weight decay on hidden layers
-- **Improved MoE Load Balancing**: Fast to reach low MoE max-violation metric
-- **Bounded Activations**: Strictly controllable activation scale
-- **Suppressed Outliers**: Enhanced stability for deep networks 
+- **Better Convergence**: Outperforms AdamW and Muon with a substantial margin in Dense 1.7B, MoE 8B and 200-layer DeepNet, while keeping the "healthiest" model intrinsic metric
+- **Controlled Stability**: Both weights and updates satisfy μP constraints, offer tunable sphere radius, suppressed outliers and controlled activation scales in favour of low-precision training
+- **System Efficiency**: Atomic Module Sharding, Adaptive Kernel Dispatcher, Cached Singular Vectors, etc. MuonSphere variant retains equivalent activation control with minimal overhead
 
 ## 2. [Algorithm](https://github.com/Unakar/Megatron-LM/blob/spectral_ball/emerging_optimizers/orthogonalized_optimizers/spectral_ball_utils.py)
 
@@ -138,3 +135,11 @@ We support downstream task evaluation during training:
 </p>
 
 ---
+
+## 6. Acknowledgement
+
+We gratefully acknowledge the developers of [Emerging-Optimizers](https://github.com/NVIDIA-NeMo/Emerging-Optimizers) and  [Megatron-LM](https://github.com/NVIDIA/Megatron-LM)
+
+## 7. License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
