@@ -146,4 +146,4 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## 8. Contact
 
-If you have any questions, please raise an issue or contact [Tian Xie](mailto:xqs2002@mail.ustc.edu.cn)
+If you have any questions, please raise an issue or contact [Unakar](mailto:xqs2002@mail.ustc.edu.cn)
