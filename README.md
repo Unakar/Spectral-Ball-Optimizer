@@ -1,16 +1,17 @@
-# Fully **μP** Aligned LLM Training on Spectral Sphere
 
 <div align="center">
+  <a href="sso_paper.pdf">📄 <b>Paper</b></a>  |  
   <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://www.nvidia.com/favicon.ico" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
   <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  |  
 </div>
 
-## Abstract
+## 1. Introduction
 
-Maintaining Θ(1) activation scale is a fundamental design principle in deep learning, enabling width-invariant scaling paradigms like **μ**P. While emerging optimizers such as Muon apply spectral constraints to update gradients, they leave weights spectrally unconstrained, which hurts forward stability and breaks scaling law transfer. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully **μ**P-aligned optimization process. We implement SSO as an efficient, numerically stable parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball).
+This repository contains the official implementation for the paper: **[Controlled LLM Training on Spectral Sphere 	](sso_paper.pdf)**.
 
-## Key Features
+> **Abstract:** Scaling large models requires optimization strategies that ensure rapid convergence grounded in stability. Maximal Update Parametrization (μP) provides a theoretical safeguard for width-invariant Θ(1) activation control, whereas emerging optimizers like Muon are only "half-aligned" with these constraints: they control updates but allow weights to drift. To address this limitation, we introduce the **Spectral Sphere Optimizer (SSO)**, which enforces strict module-wise spectral constraints on both weights and their updates. By deriving the steepest descent direction on the spectral sphere, SSO realizes a fully μP-aligned optimization process. To enable large-scale training, we implement SSO as an efficient parallel algorithm within Megatron. Through extensive pretraining on diverse architectures, including Dense 1.7B, MoE 8B-A1B, and 200-layer DeepNet models, SSO consistently outperforms AdamW and Muon. Furthermore, we observe significant practical stability benefits, including improved MoE router load balancing, suppressed outliers, and strictly bounded activations. Megatron Code is available at [SSO Pretrain](https://github.com/Unakar/Megatron-LM/tree/spectral_ball).
 
+**Key Contributions:**
 - **Better Convergence**: Outperforms Adamw and Muon
 - **Fully μP Aligned**: Both weights and updates satisfy spectral norm constraints
 - **No Weight Decay for 2D Weights**: Eliminates the need for weight decay on hidden layers
@@ -18,7 +19,7 @@ Maintaining Θ(1) activation scale is a fundamental design principle in deep lea
 - **Bounded Activations**: Strictly controllable activation scale
 - **Suppressed Outliers**: Enhanced stability for deep networks 
 
-## Method
+## 2. [Algorithm](https://github.com/Unakar/Megatron-LM/blob/spectral_ball/emerging_optimizers/orthogonalized_optimizers/spectral_ball_utils.py)
 
 SSO performs **steepest descent** under the **spectral norm**, constraining both the **weights** and the **updates** to a spectral sphere of radius R = Θ(√(d_out/d_in)).
 
@@ -27,8 +28,6 @@ SSO performs **steepest descent** under the **spectral norm**, constraining both
 </p>
 
 **Geometry of Steepest Descent Update Directions.** The left solid arc denotes the W sphere, while the right dotted arc denotes the ΔW sphere (unit Φ scaled by η). The shaded region represents the feasible set within the tangent space of the W sphere at step W_i. Under weight constraint, projecting G onto the tangent space (Spectral Sphere) yields the largest update angle.
-
-### [Algorithm](https://github.com/Unakar/Megatron-LM/blob/spectral_ball/emerging_optimizers/orthogonalized_optimizers/spectral_ball_utils.py)
 
 ```
 Algorithm: Spectral Sphere Optimizer (SSO)
@@ -59,7 +58,7 @@ For t = 0, 1, ...
     W_{t+1} ← W_t - η · R · Φ_t                  # μP style update
 ```
 
-## WandB Reports
+## 3. WandB Reports
 
 
 | Description | Link |
@@ -69,7 +68,7 @@ For t = 0, 1, ...
 | Spectral Radius Search for Tunable Activation Scale | [Radius Search](https://wandb.ai/rqn17762075640-ustc/optimizer_radius_arena) |
 
 
-## Usage
+## 4. Usage
 
 ### Megatron-LM Integration
 
@@ -121,7 +120,7 @@ We support logging metrics below for monitoring training stability. Note that Mo
     mlp::linear_fc2 input_layernorm pre_mlp_layernorm embedding lm_head
 ```
 
-### Benchmark Evaluation
+### 5. Benchmark Evaluation
 
 We support downstream task evaluation during training:
 
