@@ -25,7 +25,7 @@ SSO performs **steepest descent** under the **spectral norm**, constraining both
   <img src="figures/geo_analysis.png" width="80%">
 </p>
 <p align="center">
-  <img src="figures/algo.png" width="90%">
+  <img src="figures/algo.png" width="80%">
 </p>
 
 ## 3. WandB Runs
