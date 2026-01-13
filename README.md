@@ -38,68 +38,7 @@ SSO performs **steepest descent** under the **spectral norm**, constraining both
 | Spectral Radius Search for Tunable Activation Scale | [Radius Search](https://wandb.ai/rqn17762075640-ustc/optimizer_radius_arena) |
 
 
-## 4. Usage
-
-### Megatron-LM Integration
-
-SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball_dist` for distributed training.
-
-### Hyperparameters
-
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--spectral-ball-momentum` | 0.9 | Momentum coefficient |
-| `--spectral-ball-use-nesterov` | True | Use Nesterov-style momentum |
-| `--spectral-ball-msign-steps` | 8 | Newton-Schulz iterations for matrix sign |
-| `--spectral-ball-solver` | bisection | Lagrange multiplier solver method |
-| `--spectral-ball-solver-tolerance-f` | 1e-8 | Solver tolerance |
-| `--spectral-ball-solver-max-iterations` | 20 | Maximum solver iterations |
-| `--spectral-ball-power-iteration-steps` | 20 | Power iteration steps for top singular vectors |
-| `--spectral-ball-radius-mode` | spectral_mup | Mode for computing target radius R |
-| `--spectral-ball-radius-scaler` | 1.0 | Scale factor for target radius |
-| `--spectral-ball-scale-mode` | spectral_mup | LR scale mode (spectral_mup, align_adamw_rms, shape_scaling) |
-| `--spectral-ball-retract-mode` | hard | Retraction mode: hard (project to sphere) or dynamic |
-| `--spectral-ball-retract-alpha` | 0.05 | Step size for dynamic retraction |
-
-### Module Granularity Options
-
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--spectral-mup-init` | - | Enable spectral μP initialization for weights |
-| `--spectral-ball-no-split-qkv` | (enabled) | Disable splitting QKV parameters |
-| `--spectral-ball-qkv-split-mode` | component | QKV split: component, group, or head |
-| `--spectral-ball-no-split-fc1` | (enabled) | Disable splitting gate/up in SwiGLU |
-| `--spectral-ball-no-split-moe-experts` | (enabled) | Disable per-expert splitting in MoE |
-
-### Model "intrinsic Health" Monitors
-
-We support logging metrics below for monitoring training stability. Note that MoE max-vio and module spectral norm are logged by default.
-
-```bash
-# log optimizer update rms before lr scaler
---log-per-module-update-rms
-
---log-per-module-grad-rms
-
---log-hidden-states embeddings input_layernorm attention::linear_qkv \
-    attention::linear_q attention::linear_k attention::linear_v \
-    attention::core_attention attention::o_proj pre_mlp_layernorm mlp
-
-# Log parameter statistics
---log-params attention::linear_qkv attention::o_proj mlp::linear_fc1 \
-    mlp::linear_fc2 input_layernorm pre_mlp_layernorm embedding lm_head
-```
-
-### 5. Benchmark Evaluation
-
-We support downstream task evaluation during training:
-
-```bash
---benchmark-eval
---benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
-```
-
-## 5. Evaluation
+## 4. Evaluation
 ### Learning Rate Transfer
 
 <p align="center">
@@ -135,6 +74,68 @@ We support downstream task evaluation during training:
 </p>
 
 ---
+
+## 5. Usage
+
+### 5.1 Megatron-LM Integration
+
+SSO is implemented in our fork of Megatron-LM. Use `--optimizer spectral_ball_dist` for distributed training.
+
+### 5.2 Hyperparameters
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--spectral-ball-momentum` | 0.9 | Momentum coefficient |
+| `--spectral-ball-use-nesterov` | True | Use Nesterov-style momentum |
+| `--spectral-ball-msign-steps` | 8 | Newton-Schulz iterations for matrix sign |
+| `--spectral-ball-solver` | bisection | Lagrange multiplier solver method |
+| `--spectral-ball-solver-tolerance-f` | 1e-8 | Solver tolerance |
+| `--spectral-ball-solver-max-iterations` | 20 | Maximum solver iterations |
+| `--spectral-ball-power-iteration-steps` | 20 | Power iteration steps for top singular vectors |
+| `--spectral-ball-radius-mode` | spectral_mup | Mode for computing target radius R |
+| `--spectral-ball-radius-scaler` | 1.0 | Scale factor for target radius |
+| `--spectral-ball-scale-mode` | spectral_mup | LR scale mode (spectral_mup, align_adamw_rms, shape_scaling) |
+| `--spectral-ball-retract-mode` | hard | Retraction mode: hard (project to sphere) or dynamic |
+| `--spectral-ball-retract-alpha` | 0.05 | Step size for dynamic retraction |
+
+### 5. Module Granularity Options
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--spectral-mup-init` | - | Enable spectral μP initialization for weights |
+| `--spectral-ball-no-split-qkv` | (enabled) | Disable splitting QKV parameters |
+| `--spectral-ball-qkv-split-mode` | component | QKV split: component, group, or head |
+| `--spectral-ball-no-split-fc1` | (enabled) | Disable splitting gate/up in SwiGLU |
+| `--spectral-ball-no-split-moe-experts` | (enabled) | Disable per-expert splitting in MoE |
+
+### 5.4 Model "intrinsic Health" Monitors
+
+We support logging metrics below for monitoring training stability. Note that MoE max-vio and module spectral norm are logged by default.
+
+```bash
+# log optimizer update rms before lr scaler
+--log-per-module-update-rms
+
+--log-per-module-grad-rms
+
+--log-hidden-states embeddings input_layernorm attention::linear_qkv \
+    attention::linear_q attention::linear_k attention::linear_v \
+    attention::core_attention attention::o_proj pre_mlp_layernorm mlp
+
+# Log parameter statistics
+--log-params attention::linear_qkv attention::o_proj mlp::linear_fc1 \
+    mlp::linear_fc2 input_layernorm pre_mlp_layernorm embedding lm_head
+```
+
+### 5.5 Benchmark Evaluation
+
+We support downstream task evaluation during training:
+
+```bash
+--benchmark-eval
+--benchmark-tasks "sciq_rc_0shot,piqa_rc_0shot,winogrande_rc_0shot,arc_easy_rc_0shot,boolq_rc_0shot,logiqa_rc_0shot,lambada_ppl_0shot,hellaswag_rc_5shot,arc_challenge_rc_5shot"
+```
+
 
 ## 6. Acknowledgement
 
