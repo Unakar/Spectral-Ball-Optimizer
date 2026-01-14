@@ -1,7 +1,8 @@
 # Controlled LLM Training on Spectral Sphere
 
 <div align="center">
-  <a href="sso_paper.pdf">📄 <b>Paper</b></a>  |  
+  <a href="sso_paper.pdf">📄 <b>Paper</b></a>  |
+  <a href="https://arxiv.org/abs/2601.08393"><img src="https://arxiv.org/static/browse/0.3.4/images/icons/favicon-32x32.png" height="16" width="16" style="vertical-align:middle"> <b>arXiv</b></a> | 
   <a href="https://github.com/Unakar/Megatron-LM/tree/spectral_ball"><img src="https://www.nvidia.com/favicon.ico" height="16" width="16" style="vertical-align:middle"> <b>Megatron-LM</b></a>  |  
   <a href="https://wandb.ai/rqn17762075640-ustc/optimizer_baselines_arena"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-dots-logo.svg" height="16" width="16" style="vertical-align:middle"> <b>WandB</b></a>  
 </div>
