@@ -29,7 +29,7 @@ def power_iteration(w: torch.Tensor, steps: int = 50, eps: float = 1e-20):
 @torch.no_grad()
 def rms_error(A: torch.Tensor, B: torch.Tensor) -> float:
     """
-    元素级 RMS 误差:
+    element-wise RMS error:
         sqrt( mean( (A_ij - B_ij)^2 ) )
     """
     diff = (A.to(torch.float32) - B.to(torch.float32)).reshape(-1)
@@ -44,9 +44,9 @@ def benchmark_power_iteration(
     device: str | None = None,
 ):
     """
-    对若干随机矩阵：
-      - 比较 power_iteration 估计的最大奇异值 vs SVD 的最大奇异值（奇异值 MAE）
-      - 比较 rank-1 重构矩阵的 RMS 误差
+    For several random matrices:
+      - compare the maximum singular value estimated by power_iteration vs the maximum singular value estimated by SVD (singular value MAE)
+      - compare the element-wise RMS error of the rank-1 reconstruction matrix
     """
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -55,28 +55,28 @@ def benchmark_power_iteration(
     torch.manual_seed(0)
 
     for (m, n) in shapes:
-        sv_abs_err_list = []   # |σ_pi - σ_svd|
-        sv_rel_err_list = []   # |σ_pi - σ_svd| / σ_svd
-        rms_list = []          # RMS( uσv^T (pi) - uσv^T (svd) )
+        sv_abs_err_list = []   # |σ_pi - σ_svd| (absolute error of singular value)
+        sv_rel_err_list = []   # |σ_pi - σ_svd| / σ_svd (relative error of singular value)
+        rms_list = []          # RMS( uσv^T (pi) - uσv^T (svd) ) (element-wise RMS error of rank-1 reconstruction)
 
         for _ in range(num_mats):
-            # 随机矩阵；你想测更极端谱的话，这里可以自己造 U S V^T
+            # random matrix; you can create your own U S V^T if you want to test more extreme spectra
             W = torch.randn(m, n, device=device, dtype=torch.float32)
 
             # ---- SVD ground truth ----
             U, S, Vh = torch.linalg.svd(W, full_matrices=False)  # U:(m,k), S:(k,), Vh:(k,n)
             sigma_svd = S[0]
-            # 取首个奇异向量，整理成列向量
+            # take the first singular vector, and reshape it into a column vector
             u_svd = U[:, [0]]                             # (m,1)
             v_svd = Vh[[0], :].transpose(-2, -1)          # (n,1)
 
-            # rank-1 重构
+            # rank-1 reconstruction
             sigma_svd_mat = sigma_svd.view(1, 1)          # (1,1)，方便广播
             W_svd_rank1 = u_svd @ (v_svd.transpose(-2, -1) * sigma_svd_mat)  # (m,n)
 
             # ---- Power iteration ----
             sigma_pi, u_pi, v_pi = power_iteration(W, steps=steps)
-            # 确保 shape 对齐
+            # ensure shape alignment
             if sigma_pi.ndim == 0:
                 sigma_pi_mat = sigma_pi.view(1, 1)
             else:
@@ -84,7 +84,7 @@ def benchmark_power_iteration(
 
             W_pi_rank1 = u_pi @ (v_pi.transpose(-2, -1) * sigma_pi_mat)
 
-            # ---- 指标 ----
+            # ---- metrics ----
             abs_err = (sigma_pi.to(torch.float32) - sigma_svd).abs().item()
             rel_err = abs_err / (sigma_svd.abs().item() + 1e-20)
             sv_abs_err_list.append(abs_err)
